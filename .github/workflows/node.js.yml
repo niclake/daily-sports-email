@@ -1,0 +1,31 @@
+name: Daily Sports Schedule
+
+on:
+  schedule:
+  - cron: "0 13 * * *"
+  workflow_dispatch:
+
+env:
+  MAIL_USER_EMAIL: ${{ secrets.MAIL_USER_EMAIL }}
+  MAIL_USER_PASSWORD: ${{ secrets.MAIL_USER_PASSWORD }}
+  MAIL_FROM: ${{ secrets.MAIL_FROM }}
+  MAIL_TO: ${{ secrets.MAIL_TO }}
+
+jobs:
+  report:
+
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        node-version: [14.x, 16.x, 18.x]
+
+    steps:
+    - uses: actions/checkout@v4
+    - name: Use Node.js ${{ matrix.node-version }}
+      uses: actions/setup-node@v3
+      with:
+        node-version: ${{ matrix.node-version }}
+        cache: 'npm'
+    - run: yarn install
+    - run: node src/main.js
