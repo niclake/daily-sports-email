@@ -9,7 +9,7 @@ config.send_email.nba = "false"; // NBA
 // Email client (if you are using Gmail you can leave)
 config.email_client.host = "smtp.gmail.com";
 config.email_client.port = "465";
-config.email_client.secure = "true";
+config.email_client.secure = "true"; // use 'true' for port 465, 'false' for all other
 // Time zone & display information
 config.user.time_zone = "America/Chicago";
 config.user.time_hour = "0"; // "0" for "13:00", "1" for "1:00 PM"

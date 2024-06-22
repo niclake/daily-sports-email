@@ -6,7 +6,7 @@ const nodemailer = require("nodemailer");
 const transporter = nodemailer.createTransport({
   host: config.email_client.host,
   port: config.email_client.port,
-  secure: config.email_client.secure === "true", // Use `true` for port 465, `false` for all other ports
+  secure: config.email_client.secure === "true",
   auth: {
     user: process.env.MAIL_USER_EMAIL,
     pass: process.env.MAIL_USER_PASSWORD,
@@ -22,6 +22,7 @@ const transporter = nodemailer.createTransport({
   const standingsData = await standingsRequest.json();
 
   const games = scheduleData.dates[0].games;
+  // Don't send the MLB email if there are no games scheduled
   if (games.length === 0) return;
 
   let i = 0;
