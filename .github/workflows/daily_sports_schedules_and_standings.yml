@@ -1,8 +1,10 @@
-name: Daily Sports Schedule
+name: Daily Sports Schedules and Standings
 
 on:
   schedule:
-  - cron: "0 13 * * *"
+  # This is in UTC - https://crontab.guru
+  - cron: "0 13 * * *" 
+  # Allow for manual triggering
   workflow_dispatch:
 
 env:
