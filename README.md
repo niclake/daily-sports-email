@@ -14,10 +14,11 @@ I am the type of person that needs information put right in front of me if I wan
 
 - Fork this repo.
 - If you'd like to test locally, pull down and run `yarn install`.
-- Update [`src/config.js`](src/config.js) with your appropriate settings for emails you want to receive, your email client settings, and your time formatting preferences.
-  - Also, if you would like to have favorite teams highlighted, set that team's value to `"true"`.
-  - If you use Gmail, you do not need to change any of the `config.email_client.*` settings
-  - If you don't use Gmail, search for `<email provider> smtp settings` to find your host & port
+- Update [`src/config.js`](src/config.js) with your appropriate settings.
+  - `config.send_email.*`: the various league emails
+  - `config.email_client.*`: SMTP settings for your email client (Gmail is already set)
+  - `config.user.*`: Localized game start times + 12/24hr display
+  - `config.${league}.*`: Choose your favorite teams to highlight them in the email
 - If your email provider offers it, generate an app specific password for your account
   - For Gmail, [you can do that here](https://myaccount.google.com/apppasswords)
 - **[LOCALLY ONLY]** Create a `.env` file at the project root.
