@@ -31,8 +31,8 @@ A project to email you schedules & standings of MLB, NBA, and/or NFL games & tea
 
 ### Whether local or on Github
 
-- In your repo, go to [`Settings > Secrets and variables > Actions`](/settings/secrets/actions). Add the secrets from [your local `.env` file](.env) here
-- In your repo, go to [`Actions`](/actions), and find the workflow. Run it via the dropdown. You should receive an email.
+- In your repo, go to `Settings > Secrets and variables > Actions`. Add the secrets from [your local `.env` file](.env) here
+- In your repo, go to `Actions`, and find the workflow. Run it via the dropdown. You should receive an email.
 - Wait until your schedule cron time. You should receive an email.
 
 ## To Do
