@@ -2,6 +2,8 @@
 
 A project to email you schedules & standings of MLB, NBA, and/or NFL games & teams every day
 
+![A screenshot of the MLB email](/images/mlb-screenshot.png)
+
 ## To Use
 
 - Fork this repo.
@@ -55,3 +57,4 @@ A project to email you schedules & standings of MLB, NBA, and/or NFL games & tea
 - [ ] Highlight NBA teams if they're a favorite
 - [ ] Command to generate .env and src/config.js files locally
 - [ ] Favorite team email(s) each Monday?
+- [ ] Option to only show favorite teams
