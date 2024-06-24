@@ -28,7 +28,9 @@ module.exports = {
     }
   },
 
-  theTime: function (gameDate) {
-    return new Date(gameDate).toLocaleTimeString('en-US', {timeZone: config.user.time_zone, hour: '2-digit', minute: '2-digit', hour12: !!+config.user.time_hour})
-  }
+  theTime: (gameDate) => new Date(gameDate).toLocaleTimeString('en-US', {timeZone: config.user.time_zone, hour: '2-digit', minute: '2-digit', hour12: !!+config.user.time_hour}),
+
+  teamClass: (teamName) => teamName.replace(/\s+/g, '-').replace(/\./g, '').toLowerCase(),
+
+  teamConfig: (teamName) => config.mlb[teamName.replace(/\s+/g, '_').replace(/\./g, '').toLowerCase()]
 };

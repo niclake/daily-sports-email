@@ -1,6 +1,7 @@
 require('dotenv').config();
 var config = require('./config');
 var tools = require('./tools');
+var styling = require('./styling');
 const fetch = require('node-fetch');
 const nodemailer = require("nodemailer");
 const transporter = nodemailer.createTransport({
@@ -29,20 +30,17 @@ const transporter = nodemailer.createTransport({
   let r = 0;
 
   var todaysGames = `
-    <style>
-      table, th, td {border: 1px solid #aaa; border-collapse: collapse;}
-      table {min-width: 50%;}
-      th {background-color: #aaa;}
-      td {padding: 0.5rem;}
-    </style>
-    <head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/></head>
+    <head>
+      <meta http-equiv="Content-Type" content="text/html charset=UTF-8" />
+      ${styling.emailStyles("mlb")}
+    </head>
     <h1>Schedule</h1>
     <table>
     <tr>
       <th style="padding: 0.5rem;">Time</th>
-      <th style="padding: 0.5rem;">Team</th>
-      <th style="padding: 0.5rem;">Record</th>
-      <th style="padding: 0.5rem;">Probable Starter</th>
+      <th style="padding: 0.5rem; text-align: left;">Team</th>
+      <th style="padding: 0.5rem; text-align: left;">W-L</th>
+      <th style="padding: 0.5rem; text-align: left;">Probable Starter</th>
     </tr>`;
 
   while (i < games.length) {
@@ -52,10 +50,12 @@ const transporter = nodemailer.createTransport({
     const homeTeam = game.teams.home;
     const gameTime = tools.theTime(game.gameDate);
     const aTeamName = awayTeam.team.name;
+    const aTeamClass = tools.teamConfig(aTeamName) == "true" ? tools.teamClass(aTeamName) : "";
     const aTeamW = awayTeam.leagueRecord.wins;
     const aTeamL = awayTeam.leagueRecord.losses;
     const aPitcher = awayTeam.probablePitcher ? awayTeam.probablePitcher.fullName : "TBD";
     const hTeamName = homeTeam.team.name;
+    const hTeamClass = tools.teamConfig(hTeamName) == "true" ? tools.teamClass(hTeamName) : "";
     const hTeamW = homeTeam.leagueRecord.wins;
     const hTeamL = homeTeam.leagueRecord.losses;
     const hPitcher = homeTeam.probablePitcher ? homeTeam.probablePitcher.fullName : "TBD";
@@ -64,12 +64,12 @@ const transporter = nodemailer.createTransport({
     gameContent = `
       <tr>
         <td rowspan="2">${gameTime}${gameNum}</td>
-        <td><strong>${aTeamName}</strong></td>
+        <td><span class="pill ${aTeamClass}"><strong>${aTeamName}</strong></span></td>
         <td>${aTeamW}-${aTeamL}</td>
         <td>${aPitcher}</td>
       </tr>
       <tr>
-        <td><strong>${hTeamName}</strong></td>
+        <td><span class="pill ${hTeamClass}"><strong>${hTeamName}</strong></span></td>
         <td>${hTeamW}-${hTeamL}</td>
         <td>${hPitcher}</td>
       </tr>
@@ -108,6 +108,7 @@ const transporter = nodemailer.createTransport({
       team = records[r];
 
       const teamName = team.team.name;
+      const teamClass = tools.teamConfig(teamName) == "true" ? tools.teamClass(teamName) : "";
       const wins = team.leagueRecord.wins;
       const losses = team.leagueRecord.losses;
       const pct = team.leagueRecord.pct;
@@ -132,7 +133,7 @@ const transporter = nodemailer.createTransport({
 
       currStandings += `
         <tr>
-          <td><strong>${teamName}</strong></td>
+          <td><span class="pill ${teamClass}"><strong>${teamName}</strong></span></td>
           <td style="text-align: center">${wins}</td>
           <td style="text-align: center">${losses}</td>
           <td style="text-align: center">${pct}</td>
@@ -143,13 +144,13 @@ const transporter = nodemailer.createTransport({
       `
       r++;
     };
-    
     i++;
   };
 
   currStandings += `</table>`;
-
   const bodyText = todaysGames + `<br/><hr/>` + currStandings;
+  // console.log(bodyText);
+  // return;
 
   await transporter.sendMail({
     from: process.env.MAIL_FROM, // sender address
