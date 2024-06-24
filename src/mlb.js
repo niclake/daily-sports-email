@@ -92,13 +92,13 @@ const transporter = nodemailer.createTransport({
     const division = standings[i].division.nameShort;
     currStandings += `
       <tr style="height: 24px;">
-        <th style="padding: 1rem 0.5rem;">${division}</th>
-        <th style="padding: 1rem 0.5rem;">W</th>
-        <th style="padding: 1rem 0.5rem;">L</th>
-        <th style="padding: 1rem 0.5rem;">PCT</th>
-        <th style="padding: 1rem 0.5rem;">STRK</th>
-        <th style="padding: 1rem 0.5rem;">GB</th>
-        <th style="padding: 1rem 0.5rem;">WCGB</th>
+        <th style="padding: 0.5rem;">${division}</th>
+        <th style="padding: 0.5rem;">W</th>
+        <th style="padding: 0.5rem;">L</th>
+        <th style="padding: 0.5rem;">PCT</th>
+        <th style="padding: 0.5rem;">STRK</th>
+        <th style="padding: 0.5rem;">GB</th>
+        <th style="padding: 0.5rem;">WCGB</th>
       </tr>
     `
     records = standings[i].teamRecords;
