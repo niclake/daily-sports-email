@@ -20,6 +20,7 @@ A project to email you schedules & standings of MLB, NBA, and/or NFL games & tea
   - Learn more at [https://crontab.guru](https://crontab.guru).
 - Run `node src/main.js`. You should see a few console logs, and you should receive an email.
 - If everything works right, commit & push to your repo.
+- [GOTO the last section](#whether-local-or-on-github).
 
 ### To set up within GitHub
 
@@ -28,6 +29,7 @@ A project to email you schedules & standings of MLB, NBA, and/or NFL games & tea
 - Update your [`.github/workflows/daily_sports_schedules_and_standings.yml`](.github/workflows/daily_sports_schedules_and_standings.yml) schedule cron to the correct time.
   - The default, `cron: "0 13 * * *"`, executes at 9am Eastern / 6am Pacific.
   - Learn more at [https://crontab.guru](https://crontab.guru).
+- [GOTO the last section](#whether-local-or-on-github).
 
 ### Whether local or on Github
 
@@ -38,11 +40,10 @@ A project to email you schedules & standings of MLB, NBA, and/or NFL games & tea
 ## To Do
 
 - [X] README
-- [ ] Command to generate .env file locally
 - [X] MLB Schedule API & format
 - [X] MLB Standings API & format
 - [X] MLB Email
-- [ ] Highlight MLB teams if they're a favorite
+- [X] Highlight MLB teams if they're a favorite
 - [ ] NFL Schedule API & format
 - [ ] NFL Standings API & format
 - [ ] NFL Email
@@ -53,4 +54,5 @@ A project to email you schedules & standings of MLB, NBA, and/or NFL games & tea
 - [ ] NBA standings API & format
 - [ ] NBA Email
 - [ ] Highlight NBA teams if they're a favorite
+- [ ] Command to generate .env and src/config.js files locally
 - [ ] Favorite team email(s) each Monday?
