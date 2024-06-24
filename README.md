@@ -25,7 +25,7 @@ I am the type of person that needs information put right in front of me if I wan
   - **DO NOT upload this file to your repo.**
   - The file contents should look as follows:
 
-```
+```yaml
 MAIL_FROM="Daily Sports Email <yourEmail@here>"
 MAIL_TO="yourEmail@here"
 MAIL_USER_EMAIL="yourEmail@here"
