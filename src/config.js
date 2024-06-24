@@ -43,13 +43,13 @@ config.mlb.oakland_athletics     = "false";
 config.mlb.philadelphia_phillies = "false";
 config.mlb.pittsburgh_pirates    = "false";
 config.mlb.san_diego_padres      = "true";
-config.mlb.san_francisco_giants   = "false";
-config.mlb.seattle_mariners       = "false";
-config.mlb.st_louis_cardinals     = "false";
-config.mlb.tampa_bay_rays         = "false";
-config.mlb.texas_rangers          = "false";
-config.mlb.toronto_blue_jays      = "false";
-config.mlb.washington_nationals   = "false";
+config.mlb.san_francisco_giants  = "false";
+config.mlb.seattle_mariners      = "false";
+config.mlb.st_louis_cardinals    = "false";
+config.mlb.tampa_bay_rays        = "false";
+config.mlb.texas_rangers         = "false";
+config.mlb.toronto_blue_jays     = "false";
+config.mlb.washington_nationals  = "false";
 // NBA team highlights
 // NFL team highlights
 // END USER CONFIGURATION //
