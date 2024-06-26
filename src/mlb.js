@@ -122,19 +122,20 @@ const transporter = nodemailer.createTransport({
       const clinched = team.clinched;
       const eliminationNumber = team.eliminationNumber;
       // TODO: Come back to this later once we see what the endpoint is going to give us.
-      // let label;
-      // return;
-      // if (divisionChamp) {
-      //   label = "z"
-      // } else if (divisionLeader) {
-      //   label = "y"
-      // } else if (clinched) {
-      //   label = "x"
-      // }
+      let label;
+      if (clinched && divisionChamp) {
+        label = "z"
+      } else if (clinched && divisionLeader) {
+        label = "y"
+      } else if (clinched) {
+        label = "x"
+      } else {
+        label = ""
+      }
 
       currStandings += `
         <tr>
-          <td><span class="pill ${teamClass}"><strong>${teamName}</strong></span></td>
+          <td><span class="pill ${teamClass}"><strong>${teamName}</strong><sup>${label}</sup></span></td>
           <td style="text-align: center">${wins}</td>
           <td style="text-align: center">${losses}</td>
           <td style="text-align: center">${pct}</td>
