@@ -59,7 +59,8 @@ const transporter = nodemailer.createTransport({
     const hTeamW = homeTeam.leagueRecord.wins;
     const hTeamL = homeTeam.leagueRecord.losses;
     const hPitcher = homeTeam.probablePitcher ? homeTeam.probablePitcher.fullName : "TBD";
-    const gameNum = game.doubleHeader === 'Y' ? ` (game ${game.gameNumber})` : '';
+    const isDH = game.doubleHeader === 'S'
+    const gameNum = isDH ? `<br/>(game ${game.gameNumber})` : '';
 
     gameContent = `
       <tr>
