@@ -13,16 +13,19 @@ I am the type of person that needs information put right in front of me if I wan
 ## To Use
 
 - Fork this repo.
-- If you'd like to test locally, pull down and run `yarn install`.
+- **[LOCALLY ONLY]** If you'd like to test locally, pull down and run `yarn install`.
 - Update [`src/config.js`](src/config.js) with your appropriate settings.
   - `config.send_email.*`: the various league emails
   - `config.email_client.*`: SMTP settings for your email client (Gmail is already set)
   - `config.user.*`: Localized game start times + 12/24hr display
   - `config.${league}.*`: Choose your favorite teams to highlight them in the email
+
+> [!NOTE]
+> These can be updated at any point to customize the email to your liking. Feel free to come back to the `config.user.*` and `config.${league}.*` parts after everything works.
+
 - If your email provider offers it, generate an app specific password for your account
   - For Gmail, [you can do that here](https://myaccount.google.com/apppasswords)
 - **[LOCALLY ONLY]** Create a `.env` file at the project root.
-  - **DO NOT upload this file to your repo.**
   - The file contents should look as follows:
 
 ```yaml
@@ -34,16 +37,20 @@ MAIL_USER_PASSWORD="yourAppSpecificPasswordHere"
 
 - **[LOCALLY ONLY]** Update your `.env` file with the appropriate values.
   - For the `MAIL_USER_PASSWORD`, use your app-specific password here.
-  - For Gmail's app-specific passwords, they will look like `aaaa bbbb cccc dddd`; remove the spaces so it's `aaaabbbbccccdddd`.
+  - For Gmail's app-specific passwords, they will look like `this that more less`; remove the spaces so it's `thisthatmoreless`.
 - Update your [`.github/workflows/daily_sports_schedules_and_standings.yml`](.github/workflows/daily_sports_schedules_and_standings.yml) schedule cron to the correct time.
   - The default, `cron: "0 13 * * *"`, executes at 9am Eastern / 6am Pacific.
   - Learn more at [https://crontab.guru](https://crontab.guru).
 - **[LOCALLY ONLY]** Run `node src/main.js`. You should see a few console logs, and you should receive an email.
 - **[LOCALLY ONLY]** If If everything works right, commit & push to your repo.
+
+> [!CAUTION]
+> Do NOT upload your local `.env` file to your GitHub. `.gitignore` should prevent this.
+
 - In your repo, go to `Settings > Secrets and variables > Actions`. Add the secrets from [the `.env` file](.env) here, and set the values appropriately.
   - If you did not test locally, reference the "Create a `.env` file" and "Update your `.env` file" steps above.
-- In your repo, go to `Actions`, and find the workflow. Run it via the dropdown. You should receive an email.
-- Wait until your schedule cron time. You should receive an email.
+- In your repo, go to `Actions`, and find the workflow. Run it via the dropdown. You should receive an email. Hooray!
+- Wait until your schedule cron time. You should receive an email. Double hooray!
 
 ## To Do
 
