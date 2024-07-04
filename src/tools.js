@@ -8,7 +8,7 @@ module.exports = {
     const year = dateObj.getFullYear();
 
     const nthNumber = (number) => {
-      if (number > 3 && number < 21) return "th";
+      if (number > 3 && number < 21) return `${number}th`;
       switch (number % 10) {
         case 1:
           return `${number}st`;
