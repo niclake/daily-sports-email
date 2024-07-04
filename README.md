@@ -39,7 +39,7 @@ MAIL_USER_PASSWORD="yourAppSpecificPasswordHere"
   - For the `MAIL_USER_PASSWORD`, use your app-specific password here.
   - For Gmail's app-specific passwords, they will look like `this that more less`; remove the spaces so it's `thisthatmoreless`.
 - Update your [`.github/workflows/daily_sports_schedules_and_standings.yml`](.github/workflows/daily_sports_schedules_and_standings.yml) schedule cron to the correct time.
-  - The default, `cron: "0 13 * * *"`, executes at 9am Eastern / 6am Pacific.
+  - The default, `cron: "0 12 * * *"`, executes at 8am Eastern / 5am Pacific.
   - Learn more at [https://crontab.guru](https://crontab.guru).
 - **[LOCALLY ONLY]** Run `node src/main.js`. You should see a few console logs, and you should receive an email.
 - **[LOCALLY ONLY]** If If everything works right, commit & push to your repo.

@@ -3,7 +3,7 @@ name: Daily Sports Schedules and Standings
 on:
   schedule:
   # This is in UTC - https://crontab.guru
-  - cron: "0 13 * * *" 
+  - cron: "0 12 * * *" 
   # Allow for manual triggering
   workflow_dispatch:
 
