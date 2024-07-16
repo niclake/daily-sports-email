@@ -22,7 +22,7 @@ const transporter = nodemailer.createTransport({
   const standingsRequest = await fetch(`https://statsapi.mlb.com/api/v1/standings?leagueId=103,104&hydrate=division`);
   const standingsData = await standingsRequest.json();
 
-  const games = scheduleData.dates[0].games;
+  const games = scheduleData.dates[0]?.games ?? [];
   // Don't send the MLB email if there are no games scheduled
   if (games.length === 0) return;
 
