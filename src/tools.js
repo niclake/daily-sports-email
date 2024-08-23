@@ -1,6 +1,6 @@
 var config = require('./config');
 module.exports = {
-  theDate: function (pretty = false) {
+  theDate: function (pretty = false, showLabel = false) {
     const dateObj = new Date();
     const day = dateObj.getDate();
     const month = dateObj.getMonth() + 1;
@@ -23,6 +23,8 @@ module.exports = {
 
     if (pretty === true) {
       return `${monthPretty} ${nthNumber(day)}, ${year}`;
+    } else if (showLabel === true) {
+      return (month >= 8) ? true : false;
     } else {
       return `${year}-${('0' + month).slice(-2)}-${('0' + day).slice(-2)}`
     }

@@ -118,24 +118,31 @@ const transporter = nodemailer.createTransport({
       const wildCardGamesBack = team.wildCardGamesBack;
       const divisionChamp = team.divisionChamp;
       const divisionLeader = team.divisionLeader;
-      const hasWildcard = team.hasWildcard;
+      const wildCardLeader = team.wildCardLeader;
       const clinched = team.clinched;
       const eliminationNumber = team.eliminationNumber;
+      const eliminated = eliminationNumber === "E";
       // TODO: Come back to this later once we see what the endpoint is going to give us.
-      let label;
-      if (clinched && divisionChamp) {
-        label = "z"
-      } else if (clinched && divisionLeader) {
-        label = "y"
-      } else if (clinched) {
-        label = "x"
-      } else {
-        label = ""
+      let label = "";
+      if (tools.theDate(showLabel=true)) {
+        if (clinched && divisionChamp) {
+          label = " Z"
+        } else if (clinched && divisionLeader) {
+          label = " Y"
+        } else if (clinched) {
+          label = " X"
+        } else if (wildCardLeader) {
+          label = " w"
+        } else if (eliminationNumber < 20) {
+          label = " e" + eliminationNumber
+        } else if (eliminated) {
+          label = " e"
+        }
       }
 
       currStandings += `
         <tr>
-          <td><span class="pill ${teamClass}"><strong>${teamName}</strong><sup>${label}</sup></span></td>
+          <td><span class="pill ${teamClass}"><strong>${teamName}</strong></span><sup>${label}</sup></td>
           <td style="text-align: center">${wins}</td>
           <td style="text-align: center">${losses}</td>
           <td style="text-align: center">${pct}</td>
