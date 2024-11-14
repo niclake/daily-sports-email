@@ -50,12 +50,12 @@ const transporter = nodemailer.createTransport({
     const homeTeam = game.teams.home;
     const gameTime = tools.theTime(game.gameDate);
     const aTeamName = awayTeam.team.name;
-    const aTeamClass = tools.teamConfig(aTeamName) == "true" ? tools.teamClass(aTeamName) : "";
+    const aTeamClass = tools.teamConfig("mlb", aTeamName) == "true" ? tools.teamClass(aTeamName) : "";
     const aTeamW = awayTeam.leagueRecord.wins;
     const aTeamL = awayTeam.leagueRecord.losses;
     const aPitcher = awayTeam.probablePitcher ? awayTeam.probablePitcher.fullName : "TBD";
     const hTeamName = homeTeam.team.name;
-    const hTeamClass = tools.teamConfig(hTeamName) == "true" ? tools.teamClass(hTeamName) : "";
+    const hTeamClass = tools.teamConfig("mlb", hTeamName) == "true" ? tools.teamClass(hTeamName) : "";
     const hTeamW = homeTeam.leagueRecord.wins;
     const hTeamL = homeTeam.leagueRecord.losses;
     const hPitcher = homeTeam.probablePitcher ? homeTeam.probablePitcher.fullName : "TBD";
@@ -86,6 +86,8 @@ const transporter = nodemailer.createTransport({
   i = 0;
   var currStandings = `
   <h1>Standings</h1>
+    <small>X = Clinched Playoffs | Y = Division Leader | Z = Division Champ</small><br />
+    <small>w = Wild Card Leader | e# = Elimination Number | e = Eliminated</small><br /><br />
     <table>
   `
 
@@ -109,7 +111,7 @@ const transporter = nodemailer.createTransport({
       team = records[r];
 
       const teamName = team.team.name;
-      const teamClass = tools.teamConfig(teamName) == "true" ? tools.teamClass(teamName) : "";
+      const teamClass = tools.teamConfig("mlb", teamName) == "true" ? tools.teamClass(teamName) : "";
       const wins = team.leagueRecord.wins;
       const losses = team.leagueRecord.losses;
       const pct = team.leagueRecord.pct;
@@ -120,21 +122,25 @@ const transporter = nodemailer.createTransport({
       const divisionLeader = team.divisionLeader;
       const wildCardLeader = team.wildCardLeader;
       const clinched = team.clinched;
+      const magicNumber = team.magicNumber;
       const eliminationNumber = team.eliminationNumber;
-      const eliminated = eliminationNumber === "E";
+      const wildCardEliminationNumber = team.wildCardEliminationNumber;
+      const eliminated = wildCardEliminationNumber === "E";
       // TODO: Come back to this later once we see what the endpoint is going to give us.
       let label = "";
-      if (tools.theDate(showLabel=true)) {
+      if (tools.theDate(pretty=false, showLabel=true)) {
         if (clinched && divisionChamp) {
           label = " Z"
         } else if (clinched && divisionLeader) {
           label = " Y"
         } else if (clinched) {
           label = " X"
+        } else if (magicNumber < 10) {
+          label = " C" + magicNumber
         } else if (wildCardLeader) {
           label = " w"
-        } else if (eliminationNumber < 20) {
-          label = " e" + eliminationNumber
+        } else if (wildCardEliminationNumber < 20) {
+          label = " e" + wildCardEliminationNumber
         } else if (eliminated) {
           label = " e"
         }

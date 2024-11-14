@@ -52,6 +52,18 @@ MAIL_USER_PASSWORD="yourAppSpecificPasswordHere"
 - In your repo, go to `Actions`, and find the workflow. Run it via the dropdown. You should receive an email. Hooray!
 - Wait until your schedule cron time. You should receive an email. Double hooray!
 
+### For MLB
+
+You do not need any additional information.
+
+### For NBA
+
+You will need a [SportsData.IO](https://sportsdata.io) account, and an NBA API Free Trial. Add a `SPORTS_DATA_KEY_NBA` value to your `.env` file for local testing, and/or to your Github Secrets for running the automation.
+
+### For NFL
+
+You will need a [SportsData.IO](https://sportsdata.io) account, and an NFL API Free Trial. Add a `SPORTS_DATA_KEY_NFL` value to your `.env` file for local testing, and/or to your Github Secrets for running the automation.
+
 ## To Do
 
 - [X] README

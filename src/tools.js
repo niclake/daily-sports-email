@@ -1,6 +1,6 @@
 var config = require('./config');
 module.exports = {
-  theDate: function (pretty = false, showLabel = false) {
+  theDate: function (pretty = false, showLabel = false, forNBA = false) {
     const dateObj = new Date();
     const day = dateObj.getDate();
     const month = dateObj.getMonth() + 1;
@@ -25,6 +25,15 @@ module.exports = {
       return `${monthPretty} ${nthNumber(day)}, ${year}`;
     } else if (showLabel === true) {
       return (month >= 8) ? true : false;
+    } else if (forNBA === true) {
+      // NBA season year is when the finals happen (2024-25 season is 2025)
+      return (month >= 9) ? `${year + 1}` : `${year}`;
+    // } else if (yearFor === "mlb") {
+    //   // MLB season starts in April and doesn't cross over into the next year
+    //   return `${year}`;
+    // } else if (yearFor === "nfl") {
+    //   // NFL season starts in September
+    //   return (month >= 8) ? year : year - 1;
     } else {
       return `${year}-${('0' + month).slice(-2)}-${('0' + day).slice(-2)}`
     }
@@ -34,5 +43,5 @@ module.exports = {
 
   teamClass: (teamName) => teamName.replace(/\s+/g, '-').replace(/\./g, '').toLowerCase(),
 
-  teamConfig: (teamName) => config.mlb[teamName.replace(/\s+/g, '_').replace(/\./g, '').toLowerCase()]
+  teamConfig: (sport, teamName) => config[sport][teamName.replace(/\s+/g, '_').replace(/\./g, '').toLowerCase()]
 };

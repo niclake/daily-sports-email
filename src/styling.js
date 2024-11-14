@@ -56,7 +56,38 @@ module.exports = {
   },
 
   nbaStyles: function() {
-    return ``;
+    return `
+      .atl {background-color: #E03A3E; color: #FFFFFF; border-bottom: 3px solid #C1D32F;}
+      .bos {background-color: #007A33; color: #FFFFFF; border-bottom: 3px solid #BA9653;}
+      .bkn {background-color: #000000; color: #FFFFFF; border-bottom: 3px solid #FFFFFF;}
+      .cha {background-color: #00788C; color: #FFFFFF; border-bottom: 3px solid #1D1160;}
+      .chi {background-color: #CE1141; color: #FFFFFF; border-bottom: 3px solid #000000;}
+      .cle {background-color: #6F263D; color: #FFFFFF; border-bottom: 3px solid #FFB81C;}
+      .dal {background-color: #00538C; color: #FFFFFF; border-bottom: 3px solid #002B5E;}
+      .den {background-color: #0E2240; color: #FFFFFF; border-bottom: 3px solid #FEC524;}
+      .det {background-color: #C8102E; color: #FFFFFF; border-bottom: 3px solid #1D42BA;}
+      .gs  {background-color: #1D428A; color: #FFFFFF; border-bottom: 3px solid #FFC72C;}
+      .hou {background-color: #CE1141; color: #FFFFFF; border-bottom: 3px solid #000000;}
+      .ind {background-color: #002D62; color: #FFFFFF; border-bottom: 3px solid #FDBB30;}
+      .lac {background-color: #C8102E; color: #FFFFFF; border-bottom: 3px solid #1D42BA;}
+      .lal {background-color: #552583; color: #FFFFFF; border-bottom: 3px solid #FDB927;}
+      .mem {background-color: #5D76A9; color: #FFFFFF; border-bottom: 3px solid #12173F;}
+      .mia {background-color: #98002E; color: #FFFFFF; border-bottom: 3px solid #F9A01B;}
+      .mil {background-color: #00471B; color: #FFFFFF; border-bottom: 3px solid #EEE1C6;}
+      .min {background-color: #0C2340; color: #FFFFFF; border-bottom: 3px solid #78BE20;}
+      .no  {background-color: #0C2340; color: #FFFFFF; border-bottom: 3px solid #85714D;}
+      .ny  {background-color: #006BB6; color: #FFFFFF; border-bottom: 3px solid #F58426;}
+      .okc {background-color: #007AC1; color: #FFFFFF; border-bottom: 3px solid #EF3B24;}
+      .orl {background-color: #0077C0; color: #FFFFFF; border-bottom: 3px solid #C4CED4;}
+      .phi {background-color: #006BB6; color: #FFFFFF; border-bottom: 3px solid #ED174C;}
+      .pho {background-color: #1D1160; color: #FFFFFF; border-bottom: 3px solid #E56020;}
+      .por {background-color: #E03A3E; color: #FFFFFF; border-bottom: 3px solid #000000;}
+      .sac {background-color: #5A2D81; color: #FFFFFF; border-bottom: 3px solid #63727A;}
+      .sa  {background-color: #C4CED4; color: #000000; border-bottom: 3px solid #000000;}
+      .tor {background-color: #CE1141; color: #FFFFFF; border-bottom: 3px solid #000000;}
+      .uta {background-color: #002B5C; color: #FFFFFF; border-bottom: 3px solid #F9A01B;}
+      .was {background-color: #002B5C; color: #FFFFFF; border-bottom: 3px solid #E31837;}
+    `;
   },
 
   nflStyles: function() {
