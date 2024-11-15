@@ -86,7 +86,7 @@ const transporter = nodemailer.createTransport({
     const hTeamClass = tools.teamConfig("nba", homeInfo["full"]) == "true" ? tools.teamClass(homeAbbr) : '';
 
     const gameTime = tools.theTime(game.DateTime);
-    const IST = game.InseasonTournament ? ` (IST)` : '';
+    const IST = game.InseasonTournament ? ` (NBA Cup)` : '';
 
     gameContent = `
       <tr>
