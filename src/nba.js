@@ -19,7 +19,7 @@ const transporter = nodemailer.createTransport({
   console.log('Running NBA generation');
 
   let sportsDataKeyNBA = process.env.SPORTS_DATA_KEY_NBA;
-  let seasonYear = tools.theDate(pretty=false, showLabel=false, forNBA=true);
+  let seasonYear = tools.theDate(pretty=false, showLabel=false, yearFor="nba");
 
   // const scheduleRequest = await fetch(`https://api.sportsdata.io/v3/nba/scores/json/ScoresBasicFinal/${tools.theDate()}?key=${sportsDataKeyNBA}`);
   const scheduleRequest = await fetch(`https://api.sportsdata.io/v3/nba/scores/json/GamesByDateFinal/${tools.theDate()}?key=${sportsDataKeyNBA}`);
@@ -27,8 +27,8 @@ const transporter = nodemailer.createTransport({
   const standingsRequest = await fetch(`https://api.sportsdata.io/v3/nba/scores/json/Standings/${seasonYear}?key=${sportsDataKeyNBA}`);
   const standingsData = await standingsRequest.json();
 
-  const games = scheduleData ?? [];
-  // Don't send the MLB email if there are no games scheduled
+  let games = scheduleData ?? [];
+  // Don't send the NBA email if there are no games scheduled
   if (games.length === 0) return;
 
   let i = 0;
@@ -71,6 +71,8 @@ const transporter = nodemailer.createTransport({
       <th style="padding: 0.5rem; text-align: left;">W-L</th>
     </tr>`;
 
+
+  games = games.sort((a, b) => a.DateTime.localeCompare(b.DateTime));
     
   while (i < games.length) {
     game = games[i];
@@ -84,8 +86,9 @@ const transporter = nodemailer.createTransport({
     const homeInfo = naming.nbaNames(homeAbbr);
     const hTeamStandings = standings.find(team => team.teamAbbr === homeAbbr);
     const hTeamClass = tools.teamConfig("nba", homeInfo["full"]) == "true" ? tools.teamClass(homeAbbr) : '';
-
-    const gameTime = tools.theTime(game.DateTime);
+    
+    const utcDateTime = `${game.DateTimeUTC}Z`;
+    const gameTime = tools.theTime(utcDateTime);
     const IST = game.InseasonTournament ? ` (NBA Cup)` : '';
 
     gameContent = `

@@ -91,6 +91,39 @@ module.exports = {
   },
 
   nflStyles: function() {
-    return ``;
+    return `
+      .ari {background-color: #97233F; color: #FFFFFF; border-bottom: 3px solid #000000;}
+      .atl {background-color: #A71930; color: #FFFFFF; border-bottom: 3px solid #000000;}
+      .bal {background-color: #241773; color: #FFFFFF; border-bottom: 3px solid #000000;}
+      .buf {background-color: #00338D; color: #FFFFFF; border-bottom: 3px solid #C60C30;}
+      .car {background-color: #0085CA; color: #FFFFFF; border-bottom: 3px solid #101820;}
+      .chi {background-color: #0B162A; color: #FFFFFF; border-bottom: 3px solid #C83803;}
+      .cin {background-color: #FB4F14; color: #FFFFFF; border-bottom: 3px solid #000000;}
+      .cle {background-color: #311D00; color: #FFFFFF; border-bottom: 3px solid #FF3C00;}
+      .dal {background-color: #041E42; color: #FFFFFF; border-bottom: 3px solid #869397;}
+      .den {background-color: #002244; color: #FFFFFF; border-bottom: 3px solid #FB4F14;}
+      .det {background-color: #0076B6; color: #FFFFFF; border-bottom: 3px solid #000000;}
+      .gb  {background-color: #203731; color: #FFFFFF; border-bottom: 3px solid #FFB612;}
+      .hou {background-color: #03202F; color: #FFFFFF; border-bottom: 3px solid #A5ACAF;}
+      .ind {background-color: #002C5F; color: #FFFFFF; border-bottom: 3px solid #A5ACAF;}
+      .jax {background-color: #006778; color: #FFFFFF; border-bottom: 3px solid #D7A22A;}
+      .kc  {background-color: #E31837; color: #FFFFFF; border-bottom: 3px solid #FFB81C;}
+      .lac {background-color: #002244; color: #FFFFFF; border-bottom: 3px solid #FFC20E;}
+      .lar {background-color: #003594; color: #FFFFFF; border-bottom: 3px solid #FFA300;}
+      .lv  {background-color: #000000; color: #FFFFFF; border-bottom: 3px solid #A5ACAF;}
+      .mia {background-color: #008E97; color: #FFFFFF; border-bottom: 3px solid #FC4C02;}
+      .min {background-color: #4F2683; color: #FFFFFF; border-bottom: 3px solid #FFC62F;}
+      .ne  {background-color: #002244; color: #FFFFFF; border-bottom: 3px solid #C60C30;}
+      .no  {background-color: #D3BC8D; color: #000000; border-bottom: 3px solid #000000;}
+      .nyg {background-color: #0B2265; color: #FFFFFF; border-bottom: 3px solid #A71930;}
+      .nyj {background-color: #125740; color: #FFFFFF; border-bottom: 3px solid #FFFFFF;}
+      .phi {background-color: #004C54; color: #FFFFFF; border-bottom: 3px solid #A5ACAF;}
+      .pit {background-color: #FFB612; color: #000000; border-bottom: 3px solid #000000;}
+      .sf  {background-color: #AA0000; color: #FFFFFF; border-bottom: 3px solid #B3995D;}
+      .sea {background-color: #002244; color: #FFFFFF; border-bottom: 3px solid #69BE28;}
+      .tb  {background-color: #D50A0A; color: #FFFFFF; border-bottom: 3px solid #0A0A08;}
+      .ten {background-color: #4095D1; color: #FFFFFF; border-bottom: 3px solid #0C2340;}
+      .was {background-color: #773141; color: #FFFFFF; border-bottom: 3px solid #
+    `;
   }
 };

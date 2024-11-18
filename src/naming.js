@@ -32,5 +32,42 @@ module.exports = {
       case "uta": return {"full":"Utah Jazz","city":"Utah","team":"Jazz","abbr":"UTA"};
       case "was": return {"full":"Washington Wizards","city":"Washington","team":"Wizards","abbr":"WAS"};
     }
+  },
+
+  nflNames(teamAbbr) {
+    switch(teamAbbr.toLowerCase()) {
+      case "ari": return {"full":"Arizona Cardinals","city":"Arizona","team":"Cardinals","abbr":"ARI"};
+      case "atl": return {"full":"Atlanta Falcons","city":"Atlanta","team":"Falcons","abbr":"ATL"};
+      case "bal": return {"full":"Baltimore Ravens","city":"Baltimore","team":"Ravens","abbr":"BAL"};
+      case "buf": return {"full":"Buffalo Bills","city":"Buffalo","team":"Bills","abbr":"BUF"};
+      case "car": return {"full":"Carolina Panthers","city":"Carolina","team":"Panthers","abbr":"CAR"};
+      case "chi": return {"full":"Chicago Bears","city":"Chicago","team":"Bears","abbr":"CHI"};
+      case "cin": return {"full":"Cincinnati Bengals","city":"Cincinnati","team":"Bengals","abbr":"CIN"};
+      case "cle": return {"full":"Cleveland Browns","city":"Cleveland","team":"Browns","abbr":"CLE"};
+      case "dal": return {"full":"Dallas Cowboys","city":"Dallas","team":"Cowboys","abbr":"DAL"};
+      case "den": return {"full":"Denver Broncos","city":"Denver","team":"Broncos","abbr":"DEN"};
+      case "det": return {"full":"Detroit Lions","city":"Detroit","team":"Lions","abbr":"DET"};
+      case "gb":  return {"full":"Green Bay Packers","city":"Green Bay","team":"Packers","abbr":"GB"};
+      case "hou": return {"full":"Houston Texans","city":"Houston","team":"Texans","abbr":"HOU"};
+      case "ind": return {"full":"Indianapolis Colts","city":"Indianapolis","team":"Colts","abbr":"IND"};
+      case "jax": return {"full":"Jacksonville Jaguars","city":"Jacksonville","team":"Jaguars","abbr":"JAX"};
+      case "kc":  return {"full":"Kansas City Chiefs","city":"Kansas City","team":"Chiefs","abbr":"KC"};
+      case "lac": return {"full":"Los Angeles Chargers","city":"Los Angeles","team":"Chargers","abbr":"LAC"};
+      case "lar": return {"full":"Los Angeles Rams","city":"Los Angeles","team":"Rams","abbr":"LAR"};
+      case "lv":  return {"full":"Las Vegas Raiders","city":"Las Vegas","team":"Raiders","abbr":"LV"};
+      case "mia": return {"full":"Miami Dolphins","city":"Miami","team":"Dolphins","abbr":"MIA"};
+      case "min": return {"full":"Minnesota Vikings","city":"Minnesota","team":"Vikings","abbr":"MIN"};
+      case "ne":  return {"full":"New England Patriots","city":"New England","team":"Patriots","abbr":"NE"};
+      case "no":  return {"full":"New Orleans Saints","city":"New Orleans","team":"Saints","abbr":"NO"};
+      case "nyg": return {"full":"New York Giants","city":"New York","team":"Giants","abbr":"NYG"};
+      case "nyj": return {"full":"New York Jets","city":"New York","team":"Jets","abbr":"NYJ"};
+      case "phi": return {"full":"Philadelphia Eagles","city":"Philadelphia","team":"Eagles","abbr":"PHI"};
+      case "pit": return {"full":"Pittsburgh Steelers","city":"Pittsburgh","team":"Steelers","abbr":"PIT"};
+      case "sea": return {"full":"Seattle Seahawks","city":"Seattle","team":"Seahawks","abbr":"SEA"};
+      case "sf":  return {"full":"San Francisco 49ers","city":"San Francisco","team":"49ers","abbr":"SF"};
+      case "tb":  return {"full":"Tampa Bay Buccaneers","city":"Tampa Bay","team":"Buccaneers","abbr":"TB"};
+      case "ten": return {"full":"Tennessee Titans","city":"Tennessee","team":"Titans","abbr":"TEN"};
+      case "was": return {"full":"Washington Football Team","city":"Washington","team":"Football Team","abbr":"WAS"};
+    }
   }
 };
