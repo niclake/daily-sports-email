@@ -24,6 +24,8 @@ const transporter = nodemailer.createTransport({
 
   let sportsDataKeyNFL = process.env.SPORTS_DATA_KEY_NFL;
   let seasonYear = tools.theDate(pretty=false, showLabel=false, yearFor="nfl");
+  console.log(`NFL season year: ${seasonYear}`);
+  console.log(`NFL key: ${sportsDataKeyNFL}`);
 
   const timeframeRequest = await fetch(`https://api.sportsdata.io/v3/nfl/scores/json/Timeframes/current?key=${sportsDataKeyNFL}`)
   const timeframeData = await timeframeRequest.json();
