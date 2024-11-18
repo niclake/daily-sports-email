@@ -5,4 +5,5 @@ var config = require('./config');
   console.log("Running appropriate emails.");
   var mlb = config.send_email.mlb === "true" ? require('./mlb') : '';
   var nba = config.send_email.nba === "true" ? require('./nba') : '';
+  var nfl = config.send_email.nfl === "true" ? require('./nfl') : '';
 })();

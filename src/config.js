@@ -12,7 +12,7 @@ config.nfl = {};
 // Which emails do you want to receive?
 config.send_email.mlb = "true"; // MLB
 config.send_email.nba = "true"; // NBA
-config.send_email.nfl = "false"; // NFL
+config.send_email.nfl = "true"; // NFL
 // Email client
 // Defaults are for Gmail
 config.email_client.host = "smtp.gmail.com";
