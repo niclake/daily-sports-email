@@ -20,8 +20,8 @@ const transporter = nodemailer.createTransport({
 
   let sportsDataKeyNBA = process.env.SPORTS_DATA_KEY_NBA;
   let seasonYear = tools.theDate(pretty=false, showLabel=false, yearFor="nba");
+  console.log(sportsDataKeyNBA)
 
-  // const scheduleRequest = await fetch(`https://api.sportsdata.io/v3/nba/scores/json/ScoresBasicFinal/${tools.theDate()}?key=${sportsDataKeyNBA}`);
   const scheduleRequest = await fetch(`https://api.sportsdata.io/v3/nba/scores/json/GamesByDateFinal/${tools.theDate()}?key=${sportsDataKeyNBA}`);
   const scheduleData = await scheduleRequest.json();
   const standingsRequest = await fetch(`https://api.sportsdata.io/v3/nba/scores/json/Standings/${seasonYear}?key=${sportsDataKeyNBA}`);
