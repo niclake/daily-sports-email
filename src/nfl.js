@@ -43,10 +43,12 @@ const transporter = nodemailer.createTransport({
 
   // On Wednesdays, use the weekly schedule data
   if (dayOfWeek == 3) {
+    const subject = `NFL Schedule & Standings for Week ${apiWeek}`;
     games = weeklyScheduleData ?? [];
   }
   // Otherwise, use the daily schedule data
   if (dayOfWeek != 3) {
+    const subject = `NFL Schedule & Standings for ${tools.theDate(pretty=true)}`;
     games = dailyScheduleData ?? [];
   }
   // Don't send the NFL email if there are no games scheduled
@@ -183,10 +185,12 @@ const transporter = nodemailer.createTransport({
   currStandings += `</table>`;
   const bodyText = todaysGames + `<br/><hr/>` + currStandings;
 
+  const subject = 
+
   await transporter.sendMail({
     from: process.env.MAIL_FROM, // sender address
     to: process.env.MAIL_TO, // list of receivers
-    subject: `NFL Schedule & Standings for ${tools.theDate(pretty=true)}`,
+    subject: subject,
     text: `${bodyText}`, // plain text body
     html: `${bodyText}`, // html body
   });
