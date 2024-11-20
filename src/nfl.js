@@ -29,7 +29,9 @@ const transporter = nodemailer.createTransport({
   const timeframeData = await timeframeRequest.json();
   const apiSeason = timeframeData[0].ApiSeason;
   const apiWeek = timeframeData[0].ApiWeek;
-  // TODO: break here if there's no week data
+
+  // break here if there's no week data
+  if (!apiWeek || !apiSeason) return;
 
   const weeklyScheduleRequest = await fetch(`https://api.sportsdata.io/v3/nfl/scores/json/ScoresBasicFinal/${apiSeason}/${apiWeek}?key=${sportsDataKeyNFL}`);
   const weeklyScheduleData = await weeklyScheduleRequest.json();
@@ -40,15 +42,14 @@ const transporter = nodemailer.createTransport({
   const standingsData = await standingsRequest.json();
 
   var games = [];
+  var subject = '';
+  const dayNames = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
 
-  // On Wednesdays, use the weekly schedule data
-  if (dayOfWeek == 3) {
-    const subject = `NFL Schedule & Standings for Week ${apiWeek}`;
+  if (dayNames[dayOfWeek] == 'Wednesday') {
+    subject = `NFL Schedule & Standings for Week ${apiWeek}`;
     games = weeklyScheduleData ?? [];
-  }
-  // Otherwise, use the daily schedule data
-  if (dayOfWeek != 3) {
-    const subject = `NFL Schedule & Standings for ${tools.theDate(pretty=true)}`;
+  } else {
+    subject = `NFL Schedule & Standings for ${tools.theDate(pretty=true)}`;
     games = dailyScheduleData ?? [];
   }
   // Don't send the NFL email if there are no games scheduled
@@ -96,6 +97,7 @@ const transporter = nodemailer.createTransport({
     </tr>`;
 
   games = games.sort((a, b) => a.DateTime.localeCompare(b.DateTime));
+  var gameDay = '';
   
   while (i < games.length) {
     game = games[i];
@@ -115,6 +117,15 @@ const transporter = nodemailer.createTransport({
     const utcDateTime = `${game.DateTimeUTC}Z`;
     const gameTime = tools.theTime(utcDateTime);
 
+    if (dayNames[dayOfWeek] == 'Wednesday') {
+      if (dayNames[new Date(game.DateTime).getDay()] != gameDay) {
+        gameDay = dayNames[new Date(game.DateTime).getDay()];
+        todaysGames += `
+          <tr>
+            <th colspan="4" style="padding: 0.5rem;">${gameDay}</th>
+          </tr>`;
+      };
+    }
 
     gameContent = `
       <tr>
@@ -184,8 +195,6 @@ const transporter = nodemailer.createTransport({
 
   currStandings += `</table>`;
   const bodyText = todaysGames + `<br/><hr/>` + currStandings;
-
-  const subject = 
 
   await transporter.sendMail({
     from: process.env.MAIL_FROM, // sender address
