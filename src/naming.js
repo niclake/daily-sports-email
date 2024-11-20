@@ -67,7 +67,7 @@ module.exports = {
       case "sf":  return {"full":"San Francisco 49ers","city":"San Francisco","team":"49ers","abbr":"SF"};
       case "tb":  return {"full":"Tampa Bay Buccaneers","city":"Tampa Bay","team":"Buccaneers","abbr":"TB"};
       case "ten": return {"full":"Tennessee Titans","city":"Tennessee","team":"Titans","abbr":"TEN"};
-      case "was": return {"full":"Washington Football Team","city":"Washington","team":"Football Team","abbr":"WAS"};
+      case "was": return {"full":"Washington Commanders","city":"Washington","team":"Commanders","abbr":"WAS"};
     }
   }
 };
