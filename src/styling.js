@@ -123,7 +123,7 @@ module.exports = {
       .sea {background-color: #002244; color: #FFFFFF; border-bottom: 3px solid #69BE28;}
       .tb  {background-color: #D50A0A; color: #FFFFFF; border-bottom: 3px solid #0A0A08;}
       .ten {background-color: #4095D1; color: #FFFFFF; border-bottom: 3px solid #0C2340;}
-      .was {background-color: #773141; color: #FFFFFF; border-bottom: 3px solid #
+      .wsh {background-color: #773141; color: #FFFFFF; border-bottom: 3px solid #FFB612;}
     `;
   }
 };

@@ -115,7 +115,7 @@ config.nfl.san_francisco_49ers    = "false";
 config.nfl.seattle_seahawks       = "false";
 config.nfl.tampa_bay_buccaneers   = "false";
 config.nfl.tennessee_titans       = "false";
-config.nfl.washington_football    = "false";
+config.nfl.washington_commanders  = "false";
 // END USER CONFIGURATION //
 
 //      DO NOT TOUCH      //

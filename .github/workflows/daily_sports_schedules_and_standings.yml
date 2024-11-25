@@ -3,7 +3,7 @@ name: Daily Sports Schedules and Standings
 on:
   schedule:
   # This is in UTC - https://crontab.guru
-  - cron: "0 12 * * *" 
+  - cron: "0 14 * * *" 
   # Allow for manual triggering
   workflow_dispatch:
 
@@ -17,13 +17,10 @@ env:
 
 jobs:
   report:
-
     runs-on: ubuntu-latest
-
     strategy:
       matrix:
         node-version: [20.x]
-
     steps:
     - uses: actions/checkout@v4
     - name: Use Node.js ${{ matrix.node-version }}
