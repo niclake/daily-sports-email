@@ -2,12 +2,12 @@
 
 ![A screenshot of the MLB email](/images/mlb-example.jpg)
 
-I am the type of person that needs information put right in front of me if I want to guarantee that I'll see it. This project was made to send myself emails every morning, containing that day's schedule & the current standings for Major League Baseball. I decided to extend it to the NBA and NFL as well (coming soon).
+I am the type of person that needs information put right in front of me if I want to guarantee that I'll see it. This project was made to send myself emails every morning, containing that day's schedule & the current standings for MLB, NBA, and NFL games & teams.
 
 ## Features
 
-- Show the schedule for MLB, ~~NBA, and NFL~~ games happening that day
-- Show the current standings for the league~~s~~
+- Show the schedule for MLB, NBA, and NFL games happening that day
+- Show the current standings for the leagues
 - Highlight your favorite teams, so you can immediately find them on the schedule & standings
 
 ## To Use
