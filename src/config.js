@@ -24,7 +24,7 @@ config.user.time_hour = "0"; // "0" for "13:00", "1" for "1:00 PM"
 // MLB team highlights
 config.mlb.arizona_diamondbacks   = "false";
 config.mlb.atlanta_braves         = "true";
-config.mlb.baltimore_orioles      = "true";
+config.mlb.baltimore_orioles      = "false";
 config.mlb.boston_red_sox         = "true";
 config.mlb.chicago_cubs           = "false";
 config.mlb.chicago_white_sox      = "false";
@@ -70,7 +70,7 @@ config.nba.los_angeles_lakers     = "false";
 config.nba.memphis_grizzlies      = "false";
 config.nba.miami_heat             = "false";
 config.nba.milwaukee_bucks        = "false";
-config.nba.minnesota_timberwolves = "true";
+config.nba.minnesota_timberwolves = "false";
 config.nba.new_orleans_pelicans   = "false";
 config.nba.new_york_knicks        = "false";
 config.nba.oklahoma_city_thunder  = "false";
