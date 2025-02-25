@@ -99,7 +99,6 @@ const transporter = nodemailer.createTransport({
         <th style="padding: 0.5rem;">W</th>
         <th style="padding: 0.5rem;">L</th>
         <th style="padding: 0.5rem;">PCT</th>
-        <th style="padding: 0.5rem;">STRK</th>
         <th style="padding: 0.5rem;">GB</th>
         <th style="padding: 0.5rem;">WCGB</th>
       </tr>
@@ -115,7 +114,7 @@ const transporter = nodemailer.createTransport({
       const wins = team.leagueRecord.wins;
       const losses = team.leagueRecord.losses;
       const pct = team.leagueRecord.pct;
-      const streak = team.streak.streakCode;
+      // const streak = team.streak.streakCode !== undefined ? team.streak.streakCode : "";
       const gamesBack = team.gamesBack;
       const wildCardGamesBack = team.wildCardGamesBack;
       const divisionChamp = team.divisionChamp;
@@ -152,7 +151,6 @@ const transporter = nodemailer.createTransport({
           <td style="text-align: center">${wins}</td>
           <td style="text-align: center">${losses}</td>
           <td style="text-align: center">${pct}</td>
-          <td style="text-align: center">${streak}</td>
           <td style="text-align: center">${gamesBack}</td>
           <td style="text-align: center">${wildCardGamesBack}</td>
         </tr>
@@ -164,8 +162,6 @@ const transporter = nodemailer.createTransport({
 
   currStandings += `</table>`;
   const bodyText = todaysGames + `<br/><hr/>` + currStandings;
-  // console.log(bodyText);
-  // return;
 
   await transporter.sendMail({
     from: process.env.MAIL_FROM, // sender address

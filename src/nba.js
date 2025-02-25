@@ -71,7 +71,6 @@ const transporter = nodemailer.createTransport({
       <th style="padding: 0.5rem; text-align: left;">W-L</th>
     </tr>`;
 
-
   games = games.sort((a, b) => a.DateTime.localeCompare(b.DateTime));
     
   while (i < games.length) {
