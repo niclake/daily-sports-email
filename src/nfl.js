@@ -106,16 +106,17 @@ const transporter = nodemailer.createTransport({
     const awayInfo = naming.nflNames(awayAbbr);
     const aTeamStandings = standings.find(team => team.teamName === awayInfo["full"]);
     const aTeamClass = tools.teamConfig("nfl", awayInfo["full"]) == "true" ? tools.teamClass(awayAbbr) : '';
-    const aTeamWL = `${aTeamStandings["wins"]}-${aTeamStandings["losses"]}${aTeamStandings["ties"] > 0 ? `-${aTeamStandings["ties"]}` : ''}`;
+    const aTeamWL = aTeamStandings === undefined ? "-" : `${aTeamStandings["wins"]}-${aTeamStandings["losses"]}${aTeamStandings["ties"] > 0 ? `-${aTeamStandings["ties"]}` : ''}`;
 
     const homeAbbr = game.HomeTeam;
     const homeInfo = naming.nflNames(homeAbbr);
     const hTeamStandings = standings.find(team => team.teamName === homeInfo["full"]);
     const hTeamClass = tools.teamConfig("nfl", homeInfo["full"]) == "true" ? tools.teamClass(homeAbbr) : '';
-    const hTeamWL = `${hTeamStandings["wins"]}-${hTeamStandings["losses"]}${hTeamStandings["ties"] > 0 ? `-${hTeamStandings["ties"]}` : ''}`;
+    const hTeamWL = hTeamStandings === undefined ? "-" : `${hTeamStandings["wins"]}-${hTeamStandings["losses"]}${hTeamStandings["ties"] > 0 ? `-${hTeamStandings["ties"]}` : ''}`;
 
     const utcDateTime = `${game.DateTimeUTC}Z`;
     const gameTime = tools.theTime(utcDateTime);
+    const channel = game.Channel;
 
     if (dayNames[dayOfWeek] == 'Wednesday') {
       if (dayNames[new Date(game.DateTime).getDay()] != gameDay) {
@@ -129,7 +130,7 @@ const transporter = nodemailer.createTransport({
 
     gameContent = `
       <tr>
-        <td rowspan="2">${gameTime}</td>
+        <td rowspan="2">${gameTime}<br />${channel}</td>
         <td><span class="pill ${aTeamClass}"><strong>${awayInfo["full"]}</strong></span></td>
         <td>${aTeamWL}</td>
       </tr>
