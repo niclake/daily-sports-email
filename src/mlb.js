@@ -26,6 +26,8 @@ const transporter = nodemailer.createTransport({
   // Don't send the MLB email if there are no games scheduled
   if (games.length === 0) return;
 
+  const teamClasses = buildTeamClasses(standingsData.records);
+
   let i = 0;
   let r = 0;
 
@@ -50,12 +52,12 @@ const transporter = nodemailer.createTransport({
     const homeTeam = game.teams.home;
     const gameTime = tools.theTime(game.gameDate);
     const aTeamName = awayTeam.team.name;
-    const aTeamClass = tools.teamConfig("mlb", aTeamName) == "true" ? tools.teamClass(aTeamName) : "";
+    const aTeamClass = teamClasses[aTeamName];
     const aTeamW = awayTeam.leagueRecord.wins;
     const aTeamL = awayTeam.leagueRecord.losses;
     const aPitcher = awayTeam.probablePitcher ? awayTeam.probablePitcher.fullName : "TBD";
     const hTeamName = homeTeam.team.name;
-    const hTeamClass = tools.teamConfig("mlb", hTeamName) == "true" ? tools.teamClass(hTeamName) : "";
+    const hTeamClass = teamClasses[hTeamName];
     const hTeamW = homeTeam.leagueRecord.wins;
     const hTeamL = homeTeam.leagueRecord.losses;
     const hPitcher = homeTeam.probablePitcher ? homeTeam.probablePitcher.fullName : "TBD";
@@ -109,9 +111,8 @@ const transporter = nodemailer.createTransport({
 
     while (r < records.length) {
       team = records[r];
-
+      
       const teamName = team.team.name;
-      const teamClass = tools.teamConfig("mlb", teamName) == "true" ? tools.teamClass(teamName) : "";
       const wins = team.leagueRecord.wins;
       const losses = team.leagueRecord.losses;
       const pct = team.leagueRecord.pct;
@@ -124,26 +125,27 @@ const transporter = nodemailer.createTransport({
       const wildCardLeader = team.wildCardLeader;
       const clinched = team.clinched;
       const magicNumber = team.magicNumber;
-      const eliminationNumber = team.eliminationNumber;
       const wildCardEliminationNumber = team.wildCardEliminationNumber;
       const eliminated = wildCardEliminationNumber === "E";
-      // TODO: Come back to this later once we see what the endpoint is going to give us.
+      const isSept = tools.theDate(pretty=false, showLabel=true);
+      const teamClass = teamClasses[teamName];
+
       let label = "";
-      if (tools.theDate(pretty=false, showLabel=true)) {
+      if (isSept) {
         if (clinched && divisionChamp) {
           label = " Z"
         } else if (clinched && divisionLeader) {
           label = " Y"
         } else if (clinched) {
           label = " X"
-        } else if (magicNumber < 10) {
+        } else if (divisionLeader) {
           label = " C" + magicNumber
         } else if (wildCardLeader) {
-          label = " w"
+          label = " W"
         } else if (wildCardEliminationNumber < 20) {
           label = " e" + wildCardEliminationNumber
         } else if (eliminated) {
-          label = " e"
+          label = " E"
         }
       }
 
@@ -176,3 +178,22 @@ const transporter = nodemailer.createTransport({
   
   console.log("Message sent");
 })();
+
+function buildTeamClasses(standings) {
+  const teamClasses = {};
+  for (const division of standings) {
+    for (const teamRecord of division.teamRecords) {
+      const teamName = teamRecord.team.name;
+      const wildCardLeader = teamRecord.wildCardLeader;
+      const wildCardGamesBack = teamRecord.wildCardGamesBack;
+      const wildCardEliminationNumber = teamRecord.wildCardEliminationNumber;
+      const eliminated = wildCardEliminationNumber === "E";
+      const labelTrue = tools.teamConfig("mlb", teamName) == "true";
+      const isSept = tools.theDate(pretty=false, showLabel=true);
+      const inWCChase = (wildCardGamesBack <= 5 && !eliminated) || wildCardLeader;
+      const teamClass = (labelTrue || (isSept && inWCChase)) ? tools.teamClass(teamName) : "";
+      teamClasses[teamName] = teamClass;
+    }
+  }
+  return teamClasses;
+}
