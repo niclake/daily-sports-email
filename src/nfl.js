@@ -116,7 +116,7 @@ const transporter = nodemailer.createTransport({
 
     const utcDateTime = `${game.DateTimeUTC}Z`;
     const gameTime = tools.theTime(utcDateTime);
-    const channel = game.Channel;
+    const channel = game.Channel === undefined ? "" : game.Channel;
 
     if (dayNames[dayOfWeek] == 'Wednesday') {
       if (dayNames[new Date(game.DateTime).getDay()] != gameDay) {
