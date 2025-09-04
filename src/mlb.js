@@ -1,9 +1,10 @@
 require('dotenv').config();
-var config = require('./config');
-var tools = require('./tools');
-var styling = require('./styling');
+const config = require('./config');
+const tools = require('./tools');
+const styling = require('./styling');
 const fetch = require('node-fetch');
 const nodemailer = require("nodemailer");
+
 const transporter = nodemailer.createTransport({
   host: config.email_client.host,
   port: config.email_client.port,
@@ -14,24 +15,39 @@ const transporter = nodemailer.createTransport({
   },
 });
 
-(async function run() {
-  console.log('Running MLB Schedule');
-  
-  const scheduleRequest = await fetch(`http://statsapi.mlb.com/api/v1/schedule/games/?sportId=1&hydrate=probablePitcher&date=${tools.theDate()}`);
-  const scheduleData = await scheduleRequest.json();
-  const standingsRequest = await fetch(`https://statsapi.mlb.com/api/v1/standings?leagueId=103,104&hydrate=division`);
-  const standingsData = await standingsRequest.json();
+async function fetchMLBData() {
+  const date = tools.theDate();
+  const [scheduleRes, standingsRes] = await Promise.all([
+    fetch(`http://statsapi.mlb.com/api/v1/schedule/games/?sportId=1&hydrate=probablePitcher&date=${date}`),
+    fetch(`https://statsapi.mlb.com/api/v1/standings?leagueId=103,104&hydrate=division`)
+  ]);
+  const scheduleData = await scheduleRes.json();
+  const standingsData = await standingsRes.json();
+  return { scheduleData, standingsData };
+}
 
-  const games = scheduleData.dates[0]?.games ?? [];
-  // Don't send the MLB email if there are no games scheduled
-  if (games.length === 0) return;
+function buildTeamClasses(standings) {
+  const teamClasses = {};
+  for (const division of standings) {
+    for (const teamRecord of division.teamRecords) {
+      const teamName = teamRecord.team.name;
+      const wildCardLeader = teamRecord.wildCardLeader;
+      const wildCardGamesBack = teamRecord.wildCardGamesBack;
+      const wildCardEliminationNumber = teamRecord.wildCardEliminationNumber;
+      const eliminated = wildCardEliminationNumber === "E";
+      const labelTrue = tools.teamConfig("mlb", teamName) == "true";
+      const isSept = tools.theDate(false, true);
+      const inWCChase = (wildCardGamesBack <= 5 && !eliminated) || wildCardLeader;
+      const teamClass = (labelTrue || (isSept && inWCChase)) ? tools.teamClass(teamName) : "";
+      teamClasses[teamName] = teamClass;
+    }
+  }
+  return teamClasses;
+}
 
-  const teamClasses = buildTeamClasses(standingsData.records);
-
-  let i = 0;
-  let r = 0;
-
-  var todaysGames = `
+function renderSchedule(games, teamClasses) {
+  if (!games.length) return '';
+  let html = `
     <head>
       <meta http-equiv="Content-Type" content="text/html charset=UTF-8" />
       ${styling.emailStyles("mlb")}
@@ -44,60 +60,41 @@ const transporter = nodemailer.createTransport({
       <th style="padding: 0.5rem; text-align: left;">W-L</th>
       <th style="padding: 0.5rem; text-align: left;">Probable Starter</th>
     </tr>`;
-
-  while (i < games.length) {
-    game = games[i];
-
-    const awayTeam = game.teams.away;
-    const homeTeam = game.teams.home;
+  for (const game of games) {
+    const away = game.teams.away;
+    const home = game.teams.home;
     const gameTime = tools.theTime(game.gameDate);
-    const aTeamName = awayTeam.team.name;
-    const aTeamClass = teamClasses[aTeamName];
-    const aTeamW = awayTeam.leagueRecord.wins;
-    const aTeamL = awayTeam.leagueRecord.losses;
-    const aPitcher = awayTeam.probablePitcher ? awayTeam.probablePitcher.fullName : "TBD";
-    const hTeamName = homeTeam.team.name;
-    const hTeamClass = teamClasses[hTeamName];
-    const hTeamW = homeTeam.leagueRecord.wins;
-    const hTeamL = homeTeam.leagueRecord.losses;
-    const hPitcher = homeTeam.probablePitcher ? homeTeam.probablePitcher.fullName : "TBD";
-    const isDH = game.doubleHeader === 'S'
+    const isDH = game.doubleHeader === 'S';
     const gameNum = isDH ? `<br/>(game ${game.gameNumber})` : '';
-
-    gameContent = `
+    html += `
       <tr>
         <td rowspan="2">${gameTime}${gameNum}</td>
-        <td><span class="pill ${aTeamClass}"><strong>${aTeamName}</strong></span></td>
-        <td>${aTeamW}-${aTeamL}</td>
-        <td>${aPitcher}</td>
+        <td><span class="pill ${teamClasses[away.team.name]}"><strong>${away.team.name}</strong></span></td>
+        <td>${away.leagueRecord.wins}-${away.leagueRecord.losses}</td>
+        <td>${away.probablePitcher ? away.probablePitcher.fullName : "TBD"}</td>
       </tr>
       <tr>
-        <td><span class="pill ${hTeamClass}"><strong>${hTeamName}</strong></span></td>
-        <td>${hTeamW}-${hTeamL}</td>
-        <td>${hPitcher}</td>
+        <td><span class="pill ${teamClasses[home.team.name]}"><strong>${home.team.name}</strong></span></td>
+        <td>${home.leagueRecord.wins}-${home.leagueRecord.losses}</td>
+        <td>${home.probablePitcher ? home.probablePitcher.fullName : "TBD"}</td>
       </tr>
       <tr><th colspan="4">&nbsp;</th></tr>`;
-    
-    todaysGames += gameContent;
-    i++;
-  };
-  
-  todaysGames += `</table>`;
+  }
+  html += `</table>`;
+  return html;
+}
 
-  const standings = standingsData.records;
-  i = 0;
-  var currStandings = `
-  <h1>Standings</h1>
+function renderStandings(standings, teamClasses) {
+  let html = `
+    <h1>Standings</h1>
     <small>X = Clinched Playoffs | Y = Division Leader | Z = Division Champ</small><br />
     <small>w = Wild Card Leader | e# = Elimination Number | e = Eliminated</small><br /><br />
     <table>
-  `
-
-  while (i < standings.length) {
-    const division = standings[i].division.nameShort;
-    currStandings += `
+  `;
+  for (const division of standings) {
+    html += `
       <tr style="height: 24px;">
-        <th style="padding: 0.5rem;">${division}</th>
+        <th style="padding: 0.5rem;">${division.division.nameShort}</th>
         <th style="padding: 0.5rem;">W</th>
         <th style="padding: 0.5rem;">L</th>
         <th style="padding: 0.5rem;">PCT</th>
@@ -105,95 +102,57 @@ const transporter = nodemailer.createTransport({
         <th style="padding: 0.5rem;">GB</th>
         <th style="padding: 0.5rem;">WCGB</th>
       </tr>
-    `
-    records = standings[i].teamRecords;
-    r = 0;
-
-    while (r < records.length) {
-      team = records[r];
-      
-      const teamName = team.team.name;
-      const wins = team.leagueRecord.wins;
-      const losses = team.leagueRecord.losses;
-      const pct = team.leagueRecord.pct;
-      const streak = team.streak.streakCode !== undefined ? team.streak.streakCode : "";
+    `;
+    for (const team of division.teamRecords) {
       const lTenObj = team.records.splitRecords.find(o => o.type === 'lastTen');
-      const gamesBack = team.gamesBack;
-      const wildCardGamesBack = team.wildCardGamesBack;
-      const divisionChamp = team.divisionChamp;
-      const divisionLeader = team.divisionLeader;
-      const wildCardLeader = team.wildCardLeader;
-      const clinched = team.clinched;
-      const magicNumber = team.magicNumber;
-      const wildCardEliminationNumber = team.wildCardEliminationNumber;
-      const eliminated = wildCardEliminationNumber === "E";
-      const isSept = tools.theDate(pretty=false, showLabel=true);
-      const teamClass = teamClasses[teamName];
-
+      const isSept = tools.theDate(false, true);
       let label = "";
       if (isSept) {
-        if (clinched && divisionChamp) {
-          label = " Z"
-        } else if (clinched && divisionLeader) {
-          label = " Y"
-        } else if (clinched) {
-          label = " X"
-        } else if (divisionLeader) {
-          label = " C" + magicNumber
-        } else if (wildCardLeader) {
-          label = " W"
-        } else if (wildCardEliminationNumber < 20) {
-          label = " e" + wildCardEliminationNumber
-        } else if (eliminated) {
-          label = " E"
-        }
+        if (team.clinched && team.divisionChamp) label = " Z";
+        else if (team.clinched && team.divisionLeader) label = " Y";
+        else if (team.clinched) label = " X";
+        else if (team.divisionLeader) label = " C" + team.magicNumber;
+        else if (team.wildCardLeader) label = " W";
+        else if (team.wildCardEliminationNumber < 20) label = " e" + team.wildCardEliminationNumber;
+        else if (team.wildCardEliminationNumber === "E") label = " E";
       }
-
-      currStandings += `
+      html += `
         <tr>
-          <td><span class="pill ${teamClass}"><strong>${teamName}</strong></span><sup>${label}</sup></td>
-          <td style="text-align: center">${wins}</td>
-          <td style="text-align: center">${losses}</td>
-          <td style="text-align: center">${pct}</td>
-          <td style="text-align: center">${lTenObj.wins}-${lTenObj.losses} (${streak})</td>
-          <td style="text-align: center">${gamesBack}</td>
-          <td style="text-align: center">${wildCardGamesBack}</td>
+          <td><span class="pill ${teamClasses[team.team.name]}"><strong>${team.team.name}</strong></span><sup>${label}</sup></td>
+          <td style="text-align: center">${team.leagueRecord.wins}</td>
+          <td style="text-align: center">${team.leagueRecord.losses}</td>
+          <td style="text-align: center">${team.leagueRecord.pct}</td>
+          <td style="text-align: center">${lTenObj.wins}-${lTenObj.losses} (${team.streak.streakCode || ""})</td>
+          <td style="text-align: center">${team.gamesBack}</td>
+          <td style="text-align: center">${team.wildCardGamesBack}</td>
         </tr>
-      `
-      r++;
-    };
-    i++;
-  };
-
-  currStandings += `</table>`;
-  const bodyText = todaysGames + `<br/><hr/>` + currStandings;
-
-  await transporter.sendMail({
-    from: process.env.MAIL_FROM, // sender address
-    to: process.env.MAIL_TO, // list of receivers
-    subject: `MLB Schedule & Standings for ${tools.theDate(pretty=true)}`,
-    text: `${bodyText}`, // plain text body
-    html: `${bodyText}`, // html body
-  });
-  
-  console.log("Message sent");
-})();
-
-function buildTeamClasses(standings) {
-  const teamClasses = {};
-  for (const division of standings) {
-    for (const teamRecord of division.teamRecords) {
-      const teamName = teamRecord.team.name;
-      const wildCardLeader = teamRecord.wildCardLeader;
-      const wildCardGamesBack = teamRecord.wildCardGamesBack;
-      const wildCardEliminationNumber = teamRecord.wildCardEliminationNumber;
-      const eliminated = wildCardEliminationNumber === "E";
-      const labelTrue = tools.teamConfig("mlb", teamName) == "true";
-      const isSept = tools.theDate(pretty=false, showLabel=true);
-      const inWCChase = (wildCardGamesBack <= 5 && !eliminated) || wildCardLeader;
-      const teamClass = (labelTrue || (isSept && inWCChase)) ? tools.teamClass(teamName) : "";
-      teamClasses[teamName] = teamClass;
+      `;
     }
   }
-  return teamClasses;
+  html += `</table>`;
+  return html;
 }
+
+async function sendMLBEmail() {
+  console.log('Running MLB Schedule');
+  const { scheduleData, standingsData } = await fetchMLBData();
+  const games = scheduleData.dates[0]?.games ?? [];
+  if (!games.length) return;
+
+  const teamClasses = buildTeamClasses(standingsData.records);
+  const scheduleHtml = renderSchedule(games, teamClasses);
+  const standingsHtml = renderStandings(standingsData.records, teamClasses);
+  const bodyText = scheduleHtml + `<br/><hr/>` + standingsHtml;
+
+  await transporter.sendMail({
+    from: process.env.MAIL_FROM,
+    to: process.env.MAIL_TO,
+    subject: `MLB Schedule & Standings for ${tools.theDate(true)}`,
+    text: bodyText,
+    html: bodyText,
+  });
+
+  console.log("Message sent");
+}
+
+sendMLBEmail();
