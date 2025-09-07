@@ -1,68 +1,41 @@
 require('dotenv').config();
-var config = require('./config');
-var tools = require('./tools');
-var styling = require('./styling');
-var naming = require('./naming');
+const tools = require('./tools');
+const styling = require('./styling');
+const naming = require('./naming');
+const mailer = require('./mailer');
 const fetch = require('node-fetch');
-const nodemailer = require("nodemailer");
-const transporter = nodemailer.createTransport({
-  host: config.email_client.host,
-  port: config.email_client.port,
-  secure: config.email_client.secure === "true",
-  auth: {
-    user: process.env.MAIL_USER_EMAIL,
-    pass: process.env.MAIL_USER_PASSWORD,
-  },
-});
 
-(async function run() {
-  console.log('Running NFL generation');
-
-  let dayOfWeek = tools.theDate(pretty=false, showLabel=false, yearFor="nflDay");
-  // Do not run the NFL email on Tuesdays
-  if (dayOfWeek == 2) { return; };
-
-  let sportsDataKeyNFL = process.env.SPORTS_DATA_KEY_NFL;
-  let seasonYear = tools.theDate(pretty=false, showLabel=false, yearFor="nfl");
-
-  const timeframeRequest = await fetch(`https://api.sportsdata.io/v3/nfl/scores/json/Timeframes/current?key=${sportsDataKeyNFL}`)
+async function fetchNFLData() {
+  const sportsDataKey = process.env.SPORTS_DATA_KEY;
+  const timeframeRequest = await fetch(`https://api.sportsdata.io/v3/nfl/scores/json/Timeframes/current?key=${sportsDataKey}`)
   const timeframeData = await timeframeRequest.json();
   const apiSeason = timeframeData[0].ApiSeason;
   const apiWeek = timeframeData[0].ApiWeek;
-
   // break here if there's no week data
   if (!apiWeek || !apiSeason) return;
 
-  const weeklyScheduleRequest = await fetch(`https://api.sportsdata.io/v3/nfl/scores/json/ScoresBasicFinal/${apiSeason}/${apiWeek}?key=${sportsDataKeyNFL}`);
-  const weeklyScheduleData = await weeklyScheduleRequest.json();
-  const dailyScheduleRequest = await fetch(`https://api.sportsdata.io/v3/nfl/scores/json/ScoresByDateFinal/${tools.theDate()}?key=${sportsDataKeyNFL}`);
-  // const dailyScheduleRequest = await fetch(`https://api.sportsdata.io/v3/nfl/scores/json/ScoresByDateFinal/2024-11-17?key=${sportsDataKeyNFL}`);
-  const dailyScheduleData = await dailyScheduleRequest.json();
-  const standingsRequest = await fetch(`https://api.sportsdata.io/v3/nfl/scores/json/Standings/${seasonYear}?key=${sportsDataKeyNFL}`);
-  const standingsData = await standingsRequest.json();
+  const [weeklyScheduleRes, dailyScheduleRes, standingsRes] = await Promise.all([
+    fetch(`https://api.sportsdata.io/v3/nfl/scores/json/ScoresBasicFinal/${apiSeason}/${apiWeek}?key=${sportsDataKey}`),
+    fetch(`https://api.sportsdata.io/v3/nfl/scores/json/ScoresByDateFinal/${tools.theDate()}?key=${sportsDataKey}`),
+    fetch(`https://api.sportsdata.io/v3/nfl/scores/json/Standings/${apiSeason}?key=${sportsDataKey}`)
+  ]);
+  const weeklyScheduleData = await weeklyScheduleRes.json();
+  const dailyScheduleData = await dailyScheduleRes.json();
+  const standingsData = await standingsRes.json();
+  return { weeklyScheduleData, dailyScheduleData, standingsData, apiSeason, apiWeek };
+}
 
-  var games = [];
-  var subject = '';
-  const dayNames = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
-
-  if (dayNames[dayOfWeek] == 'Wednesday') {
-    subject = `NFL Schedule & Standings for Week ${apiWeek}`;
-    games = weeklyScheduleData ?? [];
-  } else {
-    subject = `NFL Schedule & Standings for ${tools.theDate(pretty=true)}`;
-    games = dailyScheduleData ?? [];
+function buildTeamClasses(standings) {
+  const teamClasses = {};
+  for (const team of standings) {
+    teamClasses[team.Name] = tools.teamConfig("nfl", team.Name) == "true" ? tools.teamClass(team.Team) : "";
   }
-  // Don't send the NFL email if there are no games scheduled
-  if (games.length === 0) return;
+  return teamClasses;
+}
 
-  let i = 0;
-  let r = 0;
+function formatStandings(standingsData) {
   let standings = [];
-
-  // Build the standings table, because we have to reference it for the daily schedule data
-  while (r < standingsData.length) {
-    const team = standingsData[r];
-
+  for (const team of standingsData) {
     standings.push({
       teamName: team.Name,
       teamAbbr: team.Team,
@@ -79,10 +52,12 @@ const transporter = nodemailer.createTransport({
       confRank: team.ConferenceRank,
       divRank: team.DivisionRank
     });
-    r++;
   }
+  return standings;
+}
 
-  var todaysGames = `
+function renderSchedule(games, standings, apiSeason, apiWeek, dayOfWeek, teamClasses) {
+  let html = `
     <head>
       <meta http-equiv="Content-Type" content="text/html charset=UTF-8" />
       ${styling.emailStyles("nfl")}
@@ -95,40 +70,35 @@ const transporter = nodemailer.createTransport({
       <th style="padding: 0.5rem; text-align: left;">Team</th>
       <th style="padding: 0.5rem; text-align: left;">W-L</th>
     </tr>`;
-
-  games = games.sort((a, b) => a.DateTime.localeCompare(b.DateTime));
-  var gameDay = '';
   
-  while (i < games.length) {
-    game = games[i];
-
+  for (const game of games.sort((a, b) => a.DateTime.localeCompare(b.DateTime))) {
     const awayAbbr = game.AwayTeam;
     const awayInfo = naming.nflNames(awayAbbr);
     const aTeamStandings = standings.find(team => team.teamName === awayInfo["full"]);
-    const aTeamClass = tools.teamConfig("nfl", awayInfo["full"]) == "true" ? tools.teamClass(awayAbbr) : '';
+    const aTeamClass = teamClasses[awayInfo["full"]];
     const aTeamWL = aTeamStandings === undefined ? "-" : `${aTeamStandings["wins"]}-${aTeamStandings["losses"]}${aTeamStandings["ties"] > 0 ? `-${aTeamStandings["ties"]}` : ''}`;
 
     const homeAbbr = game.HomeTeam;
     const homeInfo = naming.nflNames(homeAbbr);
     const hTeamStandings = standings.find(team => team.teamName === homeInfo["full"]);
-    const hTeamClass = tools.teamConfig("nfl", homeInfo["full"]) == "true" ? tools.teamClass(homeAbbr) : '';
+    const hTeamClass = teamClasses[homeInfo["full"]];
     const hTeamWL = hTeamStandings === undefined ? "-" : `${hTeamStandings["wins"]}-${hTeamStandings["losses"]}${hTeamStandings["ties"] > 0 ? `-${hTeamStandings["ties"]}` : ''}`;
 
     const utcDateTime = `${game.DateTimeUTC}Z`;
     const gameTime = tools.theTime(utcDateTime);
     const channel = game.Channel === undefined ? "" : game.Channel;
 
-    if (dayNames[dayOfWeek] == 'Wednesday') {
+    if (dayOfWeek == 3) {
       if (dayNames[new Date(game.DateTime).getDay()] != gameDay) {
         gameDay = dayNames[new Date(game.DateTime).getDay()];
-        todaysGames += `
+        html += `
           <tr>
             <th colspan="4" style="padding: 0.5rem;">${gameDay}</th>
           </tr>`;
       };
     }
 
-    gameContent = `
+    html = `
       <tr>
         <td rowspan="2">${gameTime}<br />${channel}</td>
         <td><span class="pill ${aTeamClass}"><strong>${awayInfo["full"]}</strong></span></td>
@@ -140,31 +110,23 @@ const transporter = nodemailer.createTransport({
       </tr>
       <tr><th colspan="4">&nbsp;</th></tr>`;
     
-    todaysGames += gameContent;
-    i++;
-  };
+    html += gameContent;
+  }
+  html += `</table>`;
+  return html;
+}
 
-  todaysGames += `</table>`;
-
-  i = 0;
-  var conference = '';
-  var division = '';
-
-  var currStandings = `
-  <h1>Standings</h1>
+function renderStandings(standings, apiWeek, teamClasses) {
+  var conference, division = '';
+  let html = `
+    <h1>Standings</h1>
     <table>
-  `
-
-  // eastStandings = standings.filter(team => team.conference === "Eastern").sort((a, b) => a.confRank - b.confRank);
-  // westStandings = standings.filter(team => team.conference === "Western").sort((a, b) => a.confRank - b.confRank);
-  // theStandings = eastStandings.concat(westStandings);
-
-  while (i < standings.length) {
-    team = standings[i];
+  `;
+  for (const team of standings) {
     if (team.division !== division) {
       conference = team.conference;
       division = team.division;
-      currStandings += `
+      html += `
       <tr>
         <th style="padding: 0.5rem;" colspan="4">${conference} ${division}</th>
       </tr>
@@ -179,31 +141,43 @@ const transporter = nodemailer.createTransport({
     const rank = (apiWeek >= 4 && team.confRank <= 7) ? ` (${team.confRank})` : '';
     const teamName = team.teamName;
     const teamAbbr = team.teamAbbr;
-    const teamClass = tools.teamConfig("nfl", teamName) == "true" ? tools.teamClass(teamAbbr) : '';
     const winLoss = `${team.wins}-${team.losses}${team.ties > 0 ? `-${team.ties}` : ''}`;
     const divWinLoss = `${team.divWins}-${team.divLosses}${team.divTies > 0 ? `-${team.divTies}` : ''}`;
     const streak = team.streak;
 
-    currStandings += `
+    html += `
       <tr>
-        <td><span class="pill ${teamClass}"><strong>${teamName}</strong></span>${rank}</td>
+        <td><span class="pill ${teamClasses[teamName]}"><strong>${teamName}</strong></span>${rank}</td>
         <td style="text-align: center">${winLoss}</td>
         <td style="text-align: center">${divWinLoss}</td>
         <td style="text-align: center">${streak}</td>
       </tr>`;
-    i++;
   }
+  html += `</table>`;
+  return html;
+}
 
-  currStandings += `</table>`;
-  const bodyText = todaysGames + `<br/><hr/>` + currStandings;
+async function sendNFLEmail() {
+  console.log('Running NFL Schedule');
 
-  await transporter.sendMail({
-    from: process.env.MAIL_FROM, // sender address
-    to: process.env.MAIL_TO, // list of receivers
-    subject: subject,
-    text: `${bodyText}`, // plain text body
-    html: `${bodyText}`, // html body
-  });
-  
-  console.log("Message sent");
-})();
+  let dayOfWeek = tools.theDate(false, false, "nflDay");
+  if (dayOfWeek == 2) { console.log("Not sending NFL email on Tuesdays"); return; };
+
+  const { weeklyScheduleData, dailyScheduleData, standingsData, apiSeason, apiWeek } = await fetchNFLData();
+  const games = (dayOfWeek == 3) ? weeklyScheduleData ?? [] : dailyScheduleData ?? [];
+  // Don't send the NFL email if there are no games scheduled
+  if (!games.length) return;
+
+  const subject = (dayOfWeek == 3) ? `NFL Schedule & Standings for Week ${apiWeek}` : `NFL Schedule & Standings for ${tools.theDate(true)}`;
+  const teamClasses = buildTeamClasses(standingsData);
+  const formattedStandings = formatStandings(standingsData);
+  const scheduleHtml = renderSchedule(games, formattedStandings, apiSeason, apiWeek, dayOfWeek, teamClasses);
+  const standingsHtml = renderStandings(formattedStandings, apiWeek, teamClasses);
+  const bodyText = scheduleHtml + `<br/><hr/>` + standingsHtml;
+
+  await mailer.sendEmail(subject, bodyText);
+
+  console.log("NFL email sent");
+}
+
+sendNFLEmail();

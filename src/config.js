@@ -21,6 +21,10 @@ config.email_client.secure = "true"; // use 'true' for port 465, 'false' for all
 // Time zone & display information
 config.user.time_zone = "America/Chicago"; // Use https://timezonedb.com/time-zones to find your time zone 
 config.user.time_hour = "0"; // "0" for "13:00", "1" for "1:00 PM"
+// League-wide playoff chase highlights
+config.mlb.playoff_chase = "true";
+config.nba.playoff_chase = "true";
+config.nfl.playoff_chase = "true";
 // MLB team highlights
 config.mlb.arizona_diamondbacks   = "false";
 config.mlb.athletics              = "false";
@@ -92,7 +96,7 @@ config.nfl.carolina_panthers      = "false";
 config.nfl.chicago_bears          = "true";
 config.nfl.cincinnati_bengals     = "false";
 config.nfl.cleveland_browns       = "false";
-config.nfl.dallas_cowboys         = "false";
+config.nfl.dallas_cowboys         = "true";
 config.nfl.denver_broncos         = "false";
 config.nfl.detroit_lions          = "false";
 config.nfl.green_bay_packers      = "false";

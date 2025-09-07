@@ -1,19 +1,8 @@
 require('dotenv').config();
-const config = require('./config');
 const tools = require('./tools');
 const styling = require('./styling');
+const mailer = require('./mailer');
 const fetch = require('node-fetch');
-const nodemailer = require("nodemailer");
-
-const transporter = nodemailer.createTransport({
-  host: config.email_client.host,
-  port: config.email_client.port,
-  secure: config.email_client.secure === "true",
-  auth: {
-    user: process.env.MAIL_USER_EMAIL,
-    pass: process.env.MAIL_USER_PASSWORD,
-  },
-});
 
 async function fetchMLBData() {
   const date = tools.theDate();
@@ -38,7 +27,8 @@ function buildTeamClasses(standings) {
       const labelTrue = tools.teamConfig("mlb", teamName) == "true";
       const isSept = tools.theDate(false, true);
       const inWCChase = (wildCardGamesBack <= 5 && !eliminated) || wildCardLeader;
-      const teamClass = (labelTrue || (isSept && inWCChase)) ? tools.teamClass(teamName) : "";
+      const wcHighlight = (isSept && inWCChase && tools.playoffChase("mlb") == "true");
+      const teamClass = (labelTrue || wcHighlight) ? tools.teamClass(teamName) : "";
       teamClasses[teamName] = teamClass;
     }
   }
@@ -88,7 +78,8 @@ function renderStandings(standings, teamClasses) {
   let html = `
     <h1>Standings</h1>
     <small>X = Clinched Playoffs | Y = Division Leader | Z = Division Champ</small><br />
-    <small>w = Wild Card Leader | e# = Elimination Number | e = Eliminated</small><br /><br />
+    <small>W = Wild Card Leader | C# = Clinch Number</small><br />
+    <small>e# = Elimination Number | E = Eliminated</small><br /><br />
     <table>
   `;
   for (const division of standings) {
@@ -139,20 +130,15 @@ async function sendMLBEmail() {
   const games = scheduleData.dates[0]?.games ?? [];
   if (!games.length) return;
 
+  const subject = `MLB Schedule & Standings for ${tools.theDate(true)}`;
   const teamClasses = buildTeamClasses(standingsData.records);
   const scheduleHtml = renderSchedule(games, teamClasses);
   const standingsHtml = renderStandings(standingsData.records, teamClasses);
   const bodyText = scheduleHtml + `<br/><hr/>` + standingsHtml;
 
-  await transporter.sendMail({
-    from: process.env.MAIL_FROM,
-    to: process.env.MAIL_TO,
-    subject: `MLB Schedule & Standings for ${tools.theDate(true)}`,
-    text: bodyText,
-    html: bodyText,
-  });
+  await mailer.sendEmail(subject, bodyText);
 
-  console.log("Message sent");
+  console.log("MLB email sent");
 }
 
 sendMLBEmail();

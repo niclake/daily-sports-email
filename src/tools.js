@@ -10,7 +10,7 @@ function nthNumber(number) {
   }
 }
 
-function formatDate({ pretty = false, showLabel = false, yearFor = "" } = {}) {
+function formatDate(pretty = false, showLabel = false, yearFor = "") {
   const dateObj = new Date();
   const dayOfWeek = dateObj.getDay();
   const day = dateObj.getDate();
@@ -56,9 +56,14 @@ function teamConfig(sport, teamName) {
   return config[sport][key];
 }
 
+function playoffChase(sport) {
+  return config[sport].playoff_chase;
+}
+
 module.exports = {
   theDate: formatDate,
   theTime,
   teamClass,
-  teamConfig
+  teamConfig,
+  playoffChase
 };

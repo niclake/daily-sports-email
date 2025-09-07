@@ -1,43 +1,36 @@
 require('dotenv').config();
-var config = require('./config');
 var tools = require('./tools');
 var styling = require('./styling');
 var naming = require('./naming');
+const mailer = require('./mailer');
 const fetch = require('node-fetch');
-const nodemailer = require("nodemailer");
-const transporter = nodemailer.createTransport({
-  host: config.email_client.host,
-  port: config.email_client.port,
-  secure: config.email_client.secure === "true",
-  auth: {
-    user: process.env.MAIL_USER_EMAIL,
-    pass: process.env.MAIL_USER_PASSWORD,
-  },
-});
 
-(async function run() {
-  console.log('Running NBA generation');
+async function fetchNBAData() {
+  let sportsDataKey = process.env.SPORTS_DATA_KEY;
 
-  let sportsDataKeyNBA = process.env.SPORTS_DATA_KEY_NBA;
-  let seasonYear = tools.theDate(pretty=false, showLabel=false, yearFor="nba");
+  const [ scheduleRequest, standingsRequest ] = await Promise.all([
+    fetch(`https://api.sportsdata.io/v3/nba/scores/json/GamesByDateFinal/${tools.theDate()}?key=${sportsDataKey}`),
+    fetch(`https://api.sportsdata.io/v3/nba/scores/json/Standings/${tools.theDate(false, false, "nba")}?key=${sportsDataKey}`)
+  ]);
 
-  const scheduleRequest = await fetch(`https://api.sportsdata.io/v3/nba/scores/json/GamesByDateFinal/${tools.theDate()}?key=${sportsDataKeyNBA}`);
   const scheduleData = await scheduleRequest.json();
-  const standingsRequest = await fetch(`https://api.sportsdata.io/v3/nba/scores/json/Standings/${seasonYear}?key=${sportsDataKeyNBA}`);
   const standingsData = await standingsRequest.json();
 
-  let games = scheduleData ?? [];
-  // Don't send the NBA email if there are no games scheduled
-  if (games.length === 0) return;
+  return { scheduleData, standingsData };
+}
 
-  let i = 0;
-  let r = 0;
+function buildTeamClasses(standings) {
+  let teamClasses = {};
+  for (const team of standings) {
+    const teamName = `${team.City} ${team.Name}`;
+    teamClasses[teamName] = tools.teamConfig("nba", teamName) == "true" ? tools.teamClass(team.Key) : ''
+  }
+  return teamClasses;
+}
+
+function formatStandings(standingsData) {
   let standings = [];
-
-  // Build the standings table, because we have to reference it for the daily schedule data
-  while (r < standingsData.length) {
-    const team = standingsData[r];
-
+  for (const team of standingsData) {
     standings.push({
       teamName: `${team.City} ${team.Name}`,
       teamCity: team.City,
@@ -54,10 +47,12 @@ const transporter = nodemailer.createTransport({
       confRank: team.ConferenceRank,
       divRank: team.DivisionRank
     });
-    r++;
   }
+  return standings;
+}
 
-  var todaysGames = `
+function renderSchedule(games, standings, teamClasses) {
+  let html = `
     <head>
       <meta http-equiv="Content-Type" content="text/html charset=UTF-8" />
       ${styling.emailStyles("nba")}
@@ -70,20 +65,16 @@ const transporter = nodemailer.createTransport({
       <th style="padding: 0.5rem; text-align: left;">W-L</th>
     </tr>`;
 
-  games = games.sort((a, b) => a.DateTime.localeCompare(b.DateTime));
-    
-  while (i < games.length) {
-    game = games[i];
-
+  for (const game of games.sort((a, b) => a.DateTime.localeCompare(b.DateTime))) {
     const awayAbbr = game.AwayTeam;
     const awayInfo = naming.nbaNames(awayAbbr);
     const aTeamStandings = standings.find(team => team.teamAbbr === awayAbbr);
-    const aTeamClass = tools.teamConfig("nba", awayInfo["full"]) == "true" ? tools.teamClass(awayAbbr) : '';
+    const aTeamClass = teamClasses[awayInfo["full"]] || '';
 
     const homeAbbr = game.HomeTeam;
     const homeInfo = naming.nbaNames(homeAbbr);
     const hTeamStandings = standings.find(team => team.teamAbbr === homeAbbr);
-    const hTeamClass = tools.teamConfig("nba", homeInfo["full"]) == "true" ? tools.teamClass(homeAbbr) : '';
+    const hTeamClass = teamClasses[homeInfo["full"]] || '';
     
     const utcDateTime = `${game.DateTimeUTC}Z`;
     const gameTime = tools.theTime(utcDateTime);
@@ -101,30 +92,28 @@ const transporter = nodemailer.createTransport({
       </tr>
       <tr><th colspan="4">&nbsp;</th></tr>`;
     
-    todaysGames += gameContent;
-    i++;
-  };
+    html += gameContent;
+  }
 
-  todaysGames += `</table>`;
+  html += `</table>`;
+  return html;
+}
 
-  i = 0;
-  var conference = '';
-  var division = '';
-
-  var currStandings = `
+function renderStandings(standings, teamClasses) {
+  var conference, division = '';
+  let html = `
   <h1>Standings</h1>
     <table>
-  `
+  `;
 
-  eastStandings = standings.filter(team => team.conference === "Eastern").sort((a, b) => a.confRank - b.confRank);
-  westStandings = standings.filter(team => team.conference === "Western").sort((a, b) => a.confRank - b.confRank);
-  theStandings = eastStandings.concat(westStandings);
+  const eastStandings = standings.filter(team => team.conference === "Eastern").sort((a, b) => a.confRank - b.confRank);
+  const westStandings = standings.filter(team => team.conference === "Western").sort((a, b) => a.confRank - b.confRank);
+  const theStandings = eastStandings.concat(westStandings);
 
-  while (i < theStandings.length) {
-    team = theStandings[i];
+  for (const team of theStandings) {
     if (team.conference !== conference) {
       conference = team.conference;
-      currStandings += `
+      html += `
       <tr>
         <th style="padding: 0.5rem;" colspan="6">${conference}</th>
       </tr>
@@ -140,13 +129,13 @@ const transporter = nodemailer.createTransport({
 
     const rank = team.confRank;
     const teamName = `${team.teamCity} ${team.teamName}`;
-    const teamClass = tools.teamConfig("nba", teamName) == "true" ? tools.teamClass(team.teamAbbr) : '';
+    const teamClass = teamClasses[teamName];
     const winLoss = `${team.wins}-${team.losses}`;
     const pct = team.pct;
     const streak = team.streak;
     const gamesBack = team.gamesBack;
 
-    currStandings += `
+    html += `
       <tr>
         <td style="padding: 0.5rem;">${rank}</td>
         <td><span class="pill ${teamClass}"><strong>${teamName}</strong></span></td>
@@ -155,21 +144,28 @@ const transporter = nodemailer.createTransport({
         <td style="text-align: center">${streak}</td>
         <td style="text-align: center">${gamesBack}</td>
       </tr>`;
-    i++;
   }
 
-  currStandings += `</table>`;
-  const bodyText = todaysGames + `<br/><hr/>` + currStandings;
-  // console.log(bodyText);
-  // return;
+  html += `</table>`;
+  return html;
+}
 
-  await transporter.sendMail({
-    from: process.env.MAIL_FROM, // sender address
-    to: process.env.MAIL_TO, // list of receivers
-    subject: `NBA Schedule & Standings for ${tools.theDate(pretty=true)}`,
-    text: `${bodyText}`, // plain text body
-    html: `${bodyText}`, // html body
-  });
-  
-  console.log("Message sent");
-})();
+async function sendNBAEmail() {
+  console.log('Running NBA Schedule');
+  const { scheduleData, standingsData } = await fetchNBAData();
+  const games = scheduleData ?? [];
+  if (!games.length) return;
+
+  const subject = `NBA Schedule & Standings for ${tools.theDate(true)}`;
+  const teamClasses = buildTeamClasses(standingsData);
+  const formattedStandings = formatStandings(standingsData);
+  const scheduleHtml = renderSchedule(games, formattedStandings, teamClasses);
+  const standingsHtml = renderStandings(formattedStandings, teamClasses);
+  const bodyText = scheduleHtml + `<br/><hr/>` + standingsHtml;
+
+  await mailer.sendEmail(subject, bodyText);
+
+  console.log("NBA email sent");
+}
+
+sendNBAEmail();

@@ -41,7 +41,7 @@ module.exports = {
         .minnesota-twins       {background-color: #002B5C; color: #FCFCFC; border-bottom: 3px solid #D31145;}
         .new-york-mets         {background-color: #002D72; color: #FCFCFC; border-bottom: 3px solid #FF5910;}
         .new-york-yankees      {background-color: #0C2340; color: #FCFCFC; border-bottom: 3px solid #C4CED3;}
-        .oakland-athletics     {background-color: #003831; color: #FCFCFC; border-bottom: 3px solid #EFB21E;}
+        .athletics             {background-color: #003831; color: #FCFCFC; border-bottom: 3px solid #EFB21E;}
         .philadelphia-phillies {background-color: #E81828; color: #FCFCFC; border-bottom: 3px solid #002D72;}
         .pittsburgh-pirates    {background-color: #FDB827; color: #27251F; border-bottom: 3px solid #27251F;}
         .san-diego-padres      {background-color: #6ECEB2; color: #FF3EB5; border-bottom: 3px solid #FBE122;}
