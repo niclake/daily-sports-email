@@ -12,6 +12,7 @@ env:
   MAIL_USER_PASSWORD: ${{ secrets.MAIL_USER_PASSWORD }}
   MAIL_FROM: ${{ secrets.MAIL_FROM }}
   MAIL_TO: ${{ secrets.MAIL_TO }}
+  SPORTS_DATA_KEY: ${{ secrets.SPORTS_DATA_KEY }}
   SPORTS_DATA_KEY_NBA: ${{ secrets.SPORTS_DATA_KEY_NBA }}
   SPORTS_DATA_KEY_NFL: ${{ secrets.SPORTS_DATA_KEY_NFL }}
 
