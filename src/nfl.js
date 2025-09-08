@@ -7,8 +7,10 @@ const fetch = require('node-fetch');
 
 async function fetchNFLData() {
   const sportsDataKey = process.env.SPORTS_DATA_KEY;
+  console.log("Api Key is", sportsDataKey);
   const timeframeRequest = await fetch(`https://api.sportsdata.io/v3/nfl/scores/json/Timeframes/current?key=${sportsDataKey}`);
   const timeframeData = await timeframeRequest.json();
+  console.log("Timeframe data:", timeframeData[0]);
   const apiSeason = timeframeData[0].ApiSeason;
   const apiWeek = timeframeData[0].ApiWeek;
   // break here if there's no week data
