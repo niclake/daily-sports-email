@@ -1,9 +1,9 @@
-require("dotenv").config();
-const tools = require("../utils/tools");
-const styling = require("../utils/styling");
-const naming = require("../utils/naming");
-const mailer = require("../utils/mailer");
-const fetch = require("node-fetch");
+require('dotenv').config();
+const tools = require('../utils/tools');
+const styling = require('../utils/styling');
+const naming = require('../utils/naming');
+const mailer = require('../utils/mailer');
+const fetch = require('node-fetch');
 
 async function fetchNFLData() {
   const sportsDataKey = process.env.SPORTS_DATA_KEY;
@@ -45,9 +45,9 @@ function buildTeamClasses(standings) {
   const teamClasses = {};
   for (const team of standings) {
     teamClasses[team.Name] =
-      tools.teamConfig("nfl", team.Name) == "true"
+      tools.teamConfig('nfl', team.Name) == 'true'
         ? tools.teamClass(team.Team)
-        : "";
+        : '';
   }
   return teamClasses;
 }
@@ -63,8 +63,8 @@ function formatStandings(standingsData) {
       losses: team.Losses,
       ties: team.Ties,
       streak:
-        team.Streak.toString().substring(0, 1) === "-"
-          ? `L${team.Streak.toString().split("-")[1]}`
+        team.Streak.toString().substring(0, 1) === '-'
+          ? `L${team.Streak.toString().split('-')[1]}`
           : `W${team.Streak}`,
       divWins: team.DivisionWins,
       divLosses: team.DivisionLosses,
@@ -89,7 +89,7 @@ function renderSchedule(
   let html = `
     <head>
       <meta http-equiv="Content-Type" content="text/html charset=UTF-8" />
-      ${styling.emailStyles("nfl")}
+      ${styling.emailStyles('nfl')}
     </head>
     <h1>Schedule</h1>
     <h2><a href="https://506sports.com/nfl.php?yr=${apiSeason
@@ -108,32 +108,32 @@ function renderSchedule(
     const awayAbbr = game.AwayTeam;
     const awayInfo = naming.nflNames(awayAbbr);
     const aTeamStandings = standings.find(
-      (team) => team.teamName === awayInfo["full"]
+      (team) => team.teamName === awayInfo['full']
     );
-    const aTeamClass = teamClasses[awayInfo["full"]];
+    const aTeamClass = teamClasses[awayInfo['full']];
     const aTeamWL =
       aTeamStandings === undefined
-        ? "-"
-        : `${aTeamStandings["wins"]}-${aTeamStandings["losses"]}${
-            aTeamStandings["ties"] > 0 ? `-${aTeamStandings["ties"]}` : ""
+        ? '-'
+        : `${aTeamStandings['wins']}-${aTeamStandings['losses']}${
+            aTeamStandings['ties'] > 0 ? `-${aTeamStandings['ties']}` : ''
           }`;
 
     const homeAbbr = game.HomeTeam;
     const homeInfo = naming.nflNames(homeAbbr);
     const hTeamStandings = standings.find(
-      (team) => team.teamName === homeInfo["full"]
+      (team) => team.teamName === homeInfo['full']
     );
-    const hTeamClass = teamClasses[homeInfo["full"]];
+    const hTeamClass = teamClasses[homeInfo['full']];
     const hTeamWL =
       hTeamStandings === undefined
-        ? "-"
-        : `${hTeamStandings["wins"]}-${hTeamStandings["losses"]}${
-            hTeamStandings["ties"] > 0 ? `-${hTeamStandings["ties"]}` : ""
+        ? '-'
+        : `${hTeamStandings['wins']}-${hTeamStandings['losses']}${
+            hTeamStandings['ties'] > 0 ? `-${hTeamStandings['ties']}` : ''
           }`;
 
     const utcDateTime = `${game.DateTimeUTC}Z`;
     const gameTime = tools.theTime(utcDateTime);
-    const channel = game.Channel === undefined ? "" : game.Channel;
+    const channel = game.Channel === undefined ? '' : game.Channel;
 
     if (dayOfWeek == 3) {
       if (dayNames[new Date(game.DateTime).getDay()] != gameDay) {
@@ -148,11 +148,11 @@ function renderSchedule(
     html += `
       <tr>
         <td rowspan="2">${gameTime}<br />${channel}</td>
-        <td><span class="pill ${aTeamClass}"><strong>${awayInfo["full"]}</strong></span></td>
+        <td><span class="pill ${aTeamClass}"><strong>${awayInfo['full']}</strong></span></td>
         <td>${aTeamWL}</td>
       </tr>
       <tr>
-        <td><span class="pill ${hTeamClass}"><strong>${homeInfo["full"]}</strong></span></td>
+        <td><span class="pill ${hTeamClass}"><strong>${homeInfo['full']}</strong></span></td>
         <td>${hTeamWL}</td>
       </tr>
       <tr><th colspan="4">&nbsp;</th></tr>`;
@@ -163,7 +163,7 @@ function renderSchedule(
 
 function renderStandings(standings, apiWeek, teamClasses) {
   var conference,
-    division = "";
+    division = '';
   let html = `
     <h1>Standings</h1>
     <table>
@@ -185,14 +185,14 @@ function renderStandings(standings, apiWeek, teamClasses) {
     }
 
     const rank =
-      apiWeek >= 4 && team.confRank <= 7 ? ` (${team.confRank})` : "";
+      apiWeek >= 4 && team.confRank <= 7 ? ` (${team.confRank})` : '';
     const teamName = team.teamName;
     const teamAbbr = team.teamAbbr;
     const winLoss = `${team.wins}-${team.losses}${
-      team.ties > 0 ? `-${team.ties}` : ""
+      team.ties > 0 ? `-${team.ties}` : ''
     }`;
     const divWinLoss = `${team.divWins}-${team.divLosses}${
-      team.divTies > 0 ? `-${team.divTies}` : ""
+      team.divTies > 0 ? `-${team.divTies}` : ''
     }`;
     const streak = team.streak;
 
@@ -210,11 +210,11 @@ function renderStandings(standings, apiWeek, teamClasses) {
 
 async function sendEmail() {
   try {
-    console.log("Running NFL Schedule");
+    console.log('Running NFL Schedule');
 
-    let dayOfWeek = tools.theDate(false, false, "nflDay");
+    let dayOfWeek = tools.theDate(false, false, 'nflDay');
     if (dayOfWeek == 2) {
-      console.log("Not sending NFL email on Tuesdays");
+      console.log('Not sending NFL email on Tuesdays');
       return;
     }
 
@@ -226,10 +226,10 @@ async function sendEmail() {
       apiWeek,
     } = await fetchNFLData();
     const games =
-      dayOfWeek == 3 ? weeklyScheduleData ?? [] : dailyScheduleData ?? [];
+      dayOfWeek == 3 ? (weeklyScheduleData ?? []) : (dailyScheduleData ?? []);
     // Don't send the NFL email if there are no games scheduled
     if (!games.length) {
-      console.log("Not sending NFL email - no games");
+      console.log('Not sending NFL email - no games');
       return;
     }
 
@@ -256,9 +256,9 @@ async function sendEmail() {
 
     await mailer.sendEmail(subject, bodyText);
 
-    console.log("NFL email sent");
+    console.log('NFL email sent');
   } catch (error) {
-    console.error("Error sending NFL email:", error);
+    console.error('Error sending NFL email:', error);
   }
 }
 

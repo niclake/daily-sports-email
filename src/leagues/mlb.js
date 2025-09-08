@@ -1,8 +1,8 @@
-require("dotenv").config();
-const tools = require("../utils/tools");
-const styling = require("../utils/styling");
-const mailer = require("../utils/mailer");
-const fetch = require("node-fetch");
+require('dotenv').config();
+const tools = require('../utils/tools');
+const styling = require('../utils/styling');
+const mailer = require('../utils/mailer');
+const fetch = require('node-fetch');
 
 async function fetchMLBData() {
   const date = tools.theDate();
@@ -27,15 +27,15 @@ function buildTeamClasses(standings) {
       const wildCardLeader = teamRecord.wildCardLeader;
       const wildCardGamesBack = teamRecord.wildCardGamesBack;
       const wildCardEliminationNumber = teamRecord.wildCardEliminationNumber;
-      const eliminated = wildCardEliminationNumber === "E";
-      const labelTrue = tools.teamConfig("mlb", teamName) == "true";
+      const eliminated = wildCardEliminationNumber === 'E';
+      const labelTrue = tools.teamConfig('mlb', teamName) == 'true';
       const isSept = tools.theDate(false, true);
       const inWCChase =
         (wildCardGamesBack <= 5 && !eliminated) || wildCardLeader;
       const wcHighlight =
-        isSept && inWCChase && tools.playoffChase("mlb") == "true";
+        isSept && inWCChase && tools.playoffChase('mlb') == 'true';
       const teamClass =
-        labelTrue || wcHighlight ? tools.teamClass(teamName) : "";
+        labelTrue || wcHighlight ? tools.teamClass(teamName) : '';
       teamClasses[teamName] = teamClass;
     }
   }
@@ -43,11 +43,11 @@ function buildTeamClasses(standings) {
 }
 
 function renderSchedule(games, teamClasses) {
-  if (!games.length) return "";
+  if (!games.length) return '';
   let html = `
     <head>
       <meta http-equiv="Content-Type" content="text/html charset=UTF-8" />
-      ${styling.emailStyles("mlb")}
+      ${styling.emailStyles('mlb')}
     </head>
     <h1>Schedule</h1>
     <table>
@@ -61,23 +61,23 @@ function renderSchedule(games, teamClasses) {
     const away = game.teams.away;
     const home = game.teams.home;
     const gameTime = tools.theTime(game.gameDate);
-    const isDH = game.doubleHeader === "S";
-    const gameNum = isDH ? `<br/>(game ${game.gameNumber})` : "";
+    const isDH = game.doubleHeader === 'S';
+    const gameNum = isDH ? `<br/>(game ${game.gameNumber})` : '';
     html += `
       <tr>
         <td rowspan="2">${gameTime}${gameNum}</td>
         <td><span class="pill ${teamClasses[away.team.name]}"><strong>${
-      away.team.name
-    }</strong></span></td>
+          away.team.name
+        }</strong></span></td>
         <td>${away.leagueRecord.wins}-${away.leagueRecord.losses}</td>
-        <td>${away.probablePitcher ? away.probablePitcher.fullName : "TBD"}</td>
+        <td>${away.probablePitcher ? away.probablePitcher.fullName : 'TBD'}</td>
       </tr>
       <tr>
         <td><span class="pill ${teamClasses[home.team.name]}"><strong>${
-      home.team.name
-    }</strong></span></td>
+          home.team.name
+        }</strong></span></td>
         <td>${home.leagueRecord.wins}-${home.leagueRecord.losses}</td>
-        <td>${home.probablePitcher ? home.probablePitcher.fullName : "TBD"}</td>
+        <td>${home.probablePitcher ? home.probablePitcher.fullName : 'TBD'}</td>
       </tr>
       <tr><th colspan="4">&nbsp;</th></tr>`;
   }
@@ -107,31 +107,31 @@ function renderStandings(standings, teamClasses) {
     `;
     for (const team of division.teamRecords) {
       const lTenObj = team.records.splitRecords.find(
-        (o) => o.type === "lastTen"
+        (o) => o.type === 'lastTen'
       );
       const isSept = tools.theDate(false, true);
-      let label = "";
+      let label = '';
       if (isSept) {
-        if (team.clinched && team.divisionChamp) label = " Z";
-        else if (team.clinched && team.divisionLeader) label = " Y";
-        else if (team.clinched) label = " X";
-        else if (team.divisionLeader) label = " C" + team.magicNumber;
-        else if (team.wildCardLeader) label = " W";
+        if (team.clinched && team.divisionChamp) label = ' Z';
+        else if (team.clinched && team.divisionLeader) label = ' Y';
+        else if (team.clinched) label = ' X';
+        else if (team.divisionLeader) label = ' C' + team.magicNumber;
+        else if (team.wildCardLeader) label = ' W';
         else if (team.wildCardEliminationNumber < 20)
-          label = " e" + team.wildCardEliminationNumber;
-        else if (team.wildCardEliminationNumber === "E") label = " E";
+          label = ' e' + team.wildCardEliminationNumber;
+        else if (team.wildCardEliminationNumber === 'E') label = ' E';
       }
       html += `
         <tr>
           <td><span class="pill ${teamClasses[team.team.name]}"><strong>${
-        team.team.name
-      }</strong></span><sup>${label}</sup></td>
+            team.team.name
+          }</strong></span><sup>${label}</sup></td>
           <td style="text-align: center">${team.leagueRecord.wins}</td>
           <td style="text-align: center">${team.leagueRecord.losses}</td>
           <td style="text-align: center">${team.leagueRecord.pct}</td>
           <td style="text-align: center">${lTenObj.wins}-${lTenObj.losses} (${
-        team.streak.streakCode || ""
-      })</td>
+            team.streak.streakCode || ''
+          })</td>
           <td style="text-align: center">${team.gamesBack}</td>
           <td style="text-align: center">${team.wildCardGamesBack}</td>
         </tr>
@@ -144,11 +144,11 @@ function renderStandings(standings, teamClasses) {
 
 async function sendEmail() {
   try {
-    console.log("Running MLB Schedule");
+    console.log('Running MLB Schedule');
     const { scheduleData, standingsData } = await fetchMLBData();
     const games = scheduleData.dates[0]?.games ?? [];
     if (!games.length) {
-      console.log("Not sending MLB email - no games");
+      console.log('Not sending MLB email - no games');
       return;
     }
 
@@ -160,9 +160,9 @@ async function sendEmail() {
 
     await mailer.sendEmail(subject, bodyText);
 
-    console.log("MLB email sent");
+    console.log('MLB email sent');
   } catch (error) {
-    console.error("Error sending MLB email:", error);
+    console.error('Error sending MLB email:', error);
   }
 }
 

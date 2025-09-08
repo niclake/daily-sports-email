@@ -10,13 +10,13 @@ module.exports = {
         @media screen and (max-width: 650px){ table { width: 100vw; margin: 0; padding: 0; } }`;
 
     switch (league) {
-      case "mlb":
+      case 'mlb':
         style += this.mlbStyles();
         break;
-      case "nba":
+      case 'nba':
         style += this.nbaStyles();
         break;
-      case "nfl":
+      case 'nfl':
         style += this.nflStyles();
         break;
     }

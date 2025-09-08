@@ -9,6 +9,14 @@
     "nodemailer": "^6.9.14"
   },
   "scripts": {
-    "start": "node src/main.js"
+    "start": "node src/main.js",
+    "lint": "eslint src --ext .js",
+    "format": "prettier --write \"src/**/*.js\""
+  },
+  "devDependencies": {
+    "eslint": "^9.35.0",
+    "eslint-config-prettier": "^10.1.8",
+    "eslint-plugin-prettier": "^5.5.4",
+    "prettier": "^3.6.2"
   }
 }

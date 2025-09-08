@@ -1,9 +1,9 @@
-require("dotenv").config();
-const tools = require("../utils/tools");
-const styling = require("../utils/styling");
-const naming = require("../utils/naming");
-const mailer = require("../utils/mailer");
-const fetch = require("node-fetch");
+require('dotenv').config();
+const tools = require('../utils/tools');
+const styling = require('../utils/styling');
+const naming = require('../utils/naming');
+const mailer = require('../utils/mailer');
+const fetch = require('node-fetch');
 
 async function fetchNBAData() {
   let sportsDataKey = process.env.SPORTS_DATA_KEY;
@@ -16,7 +16,7 @@ async function fetchNBAData() {
       `https://api.sportsdata.io/v3/nba/scores/json/Standings/${tools.theDate(
         false,
         false,
-        "nba"
+        'nba'
       )}?key=${sportsDataKey}`
     ),
   ]);
@@ -32,9 +32,9 @@ function buildTeamClasses(standings) {
   for (const team of standings) {
     const teamName = `${team.City} ${team.Name}`;
     teamClasses[teamName] =
-      tools.teamConfig("nba", teamName) == "true"
+      tools.teamConfig('nba', teamName) == 'true'
         ? tools.teamClass(team.Key)
-        : "";
+        : '';
   }
   return teamClasses;
 }
@@ -52,7 +52,7 @@ function formatStandings(standingsData) {
       losses: team.Losses,
       pct: team.Percentage.toFixed(3),
       streak: team.StreakDescription,
-      gamesBack: team.GamesBack === 0 ? "-" : team.GamesBack,
+      gamesBack: team.GamesBack === 0 ? '-' : team.GamesBack,
       conference: team.Conference,
       division: team.Division,
       confRank: team.ConferenceRank,
@@ -66,7 +66,7 @@ function renderSchedule(games, standings, teamClasses) {
   let html = `
     <head>
       <meta http-equiv="Content-Type" content="text/html charset=UTF-8" />
-      ${styling.emailStyles("nba")}
+      ${styling.emailStyles('nba')}
     </head>
     <h1>Schedule</h1>
     <table>
@@ -82,26 +82,26 @@ function renderSchedule(games, standings, teamClasses) {
     const awayAbbr = game.AwayTeam;
     const awayInfo = naming.nbaNames(awayAbbr);
     const aTeamStandings = standings.find((team) => team.teamAbbr === awayAbbr);
-    const aTeamClass = teamClasses[awayInfo["full"]] || "";
+    const aTeamClass = teamClasses[awayInfo['full']] || '';
 
     const homeAbbr = game.HomeTeam;
     const homeInfo = naming.nbaNames(homeAbbr);
     const hTeamStandings = standings.find((team) => team.teamAbbr === homeAbbr);
-    const hTeamClass = teamClasses[homeInfo["full"]] || "";
+    const hTeamClass = teamClasses[homeInfo['full']] || '';
 
     const utcDateTime = `${game.DateTimeUTC}Z`;
     const gameTime = tools.theTime(utcDateTime);
-    const IST = game.InseasonTournament ? ` (NBA Cup)` : "";
+    const IST = game.InseasonTournament ? ` (NBA Cup)` : '';
 
     gameContent = `
       <tr>
         <td rowspan="2">${gameTime}${IST}</td>
-        <td><span class="pill ${aTeamClass}"><strong>${awayInfo["full"]}</strong></span></td>
-        <td>${aTeamStandings["wins"]}-${aTeamStandings["losses"]}</td>
+        <td><span class="pill ${aTeamClass}"><strong>${awayInfo['full']}</strong></span></td>
+        <td>${aTeamStandings['wins']}-${aTeamStandings['losses']}</td>
       </tr>
       <tr>
-        <td><span class="pill ${hTeamClass}"><strong>${homeInfo["full"]}</strong></span></td>
-        <td>${hTeamStandings["wins"]}-${hTeamStandings["losses"]}</td>
+        <td><span class="pill ${hTeamClass}"><strong>${homeInfo['full']}</strong></span></td>
+        <td>${hTeamStandings['wins']}-${hTeamStandings['losses']}</td>
       </tr>
       <tr><th colspan="4">&nbsp;</th></tr>`;
 
@@ -114,17 +114,17 @@ function renderSchedule(games, standings, teamClasses) {
 
 function renderStandings(standings, teamClasses) {
   var conference,
-    division = "";
+    division = '';
   let html = `
   <h1>Standings</h1>
     <table>
   `;
 
   const eastStandings = standings
-    .filter((team) => team.conference === "Eastern")
+    .filter((team) => team.conference === 'Eastern')
     .sort((a, b) => a.confRank - b.confRank);
   const westStandings = standings
-    .filter((team) => team.conference === "Western")
+    .filter((team) => team.conference === 'Western')
     .sort((a, b) => a.confRank - b.confRank);
   const theStandings = eastStandings.concat(westStandings);
 
@@ -170,11 +170,11 @@ function renderStandings(standings, teamClasses) {
 
 async function sendEmail() {
   try {
-    console.log("Running NBA Schedule");
+    console.log('Running NBA Schedule');
     const { scheduleData, standingsData } = await fetchNBAData();
     const games = scheduleData ?? [];
     if (!games.length) {
-      console.log("Not sending NBA email - no games");
+      console.log('Not sending NBA email - no games');
       return;
     }
 
@@ -187,9 +187,9 @@ async function sendEmail() {
 
     await mailer.sendEmail(subject, bodyText);
 
-    console.log("NBA email sent");
+    console.log('NBA email sent');
   } catch (error) {
-    console.error("Error sending NBA email:", error);
+    console.error('Error sending NBA email:', error);
   }
 }
 
