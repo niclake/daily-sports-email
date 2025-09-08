@@ -1,8 +1,8 @@
 require('dotenv').config();
 const config = require("./config");
-const mlb = require("./mlb");
-const nba = require("./nba");
-const nfl = require("./nfl");
+const mlb = require("./leagues/mlb");
+const nba = require("./leagues/nba");
+const nfl = require("./leagues/nfl");
 
 const LEAGUES = {mlb, nba, nfl};
 

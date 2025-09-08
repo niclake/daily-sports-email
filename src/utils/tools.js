@@ -1,12 +1,16 @@
-const config = require('./config');
+const config = require("../config");
 
 function nthNumber(number) {
   if (number > 3 && number < 21) return `${number}th`;
   switch (number % 10) {
-    case 1: return `${number}st`;
-    case 2: return `${number}nd`;
-    case 3: return `${number}rd`;
-    default: return `${number}th`;
+    case 1:
+      return `${number}st`;
+    case 2:
+      return `${number}nd`;
+    case 3:
+      return `${number}rd`;
+    default:
+      return `${number}th`;
   }
 }
 
@@ -34,25 +38,25 @@ function formatDate(pretty = false, showLabel = false, yearFor = "") {
     case "mlb":
       return `${year}`;
     default:
-      return `${year}-${('0' + month).slice(-2)}-${('0' + day).slice(-2)}`;
+      return `${year}-${("0" + month).slice(-2)}-${("0" + day).slice(-2)}`;
   }
 }
 
 function theTime(gameDate) {
-  return new Date(gameDate).toLocaleTimeString('en-US', {
+  return new Date(gameDate).toLocaleTimeString("en-US", {
     timeZone: config.user.time_zone,
-    hour: '2-digit',
-    minute: '2-digit',
-    hour12: !!+config.user.time_hour
+    hour: "2-digit",
+    minute: "2-digit",
+    hour12: !!+config.user.time_hour,
   });
 }
 
 function teamClass(teamName) {
-  return teamName.replace(/\s+/g, '-').replace(/\./g, '').toLowerCase();
+  return teamName.replace(/\s+/g, "-").replace(/\./g, "").toLowerCase();
 }
 
 function teamConfig(sport, teamName) {
-  const key = teamName.replace(/\s+/g, '_').replace(/\./g, '').toLowerCase();
+  const key = teamName.replace(/\s+/g, "_").replace(/\./g, "").toLowerCase();
   return config[sport][key];
 }
 
@@ -65,5 +69,5 @@ module.exports = {
   theTime,
   teamClass,
   teamConfig,
-  playoffChase
+  playoffChase,
 };

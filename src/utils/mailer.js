@@ -1,5 +1,5 @@
 require('dotenv').config();
-const config = require("./config");
+const config = require("../config");
 const nodemailer = require("nodemailer");
 
 async function sendEmail(subject, bodyText) {
