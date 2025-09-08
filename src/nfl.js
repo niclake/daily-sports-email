@@ -7,7 +7,7 @@ const fetch = require('node-fetch');
 
 async function fetchNFLData() {
   const sportsDataKey = process.env.SPORTS_DATA_KEY;
-  const timeframeRequest = await fetch(`https://api.sportsdata.io/v3/nfl/scores/json/Timeframes/current?key=${sportsDataKey}`)
+  const timeframeRequest = await fetch(`https://api.sportsdata.io/v3/nfl/scores/json/Timeframes/current?key=${sportsDataKey}`);
   const timeframeData = await timeframeRequest.json();
   const apiSeason = timeframeData[0].ApiSeason;
   const apiWeek = timeframeData[0].ApiWeek;
@@ -98,7 +98,7 @@ function renderSchedule(games, standings, apiSeason, apiWeek, dayOfWeek, teamCla
       };
     }
 
-    html = `
+    html += `
       <tr>
         <td rowspan="2">${gameTime}<br />${channel}</td>
         <td><span class="pill ${aTeamClass}"><strong>${awayInfo["full"]}</strong></span></td>
@@ -109,8 +109,6 @@ function renderSchedule(games, standings, apiSeason, apiWeek, dayOfWeek, teamCla
         <td>${hTeamWL}</td>
       </tr>
       <tr><th colspan="4">&nbsp;</th></tr>`;
-    
-    html += gameContent;
   }
   html += `</table>`;
   return html;
