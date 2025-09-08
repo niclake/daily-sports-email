@@ -1,4 +1,4 @@
-module.exports = {
+const naming = {
   nbaNames(teamAbbr) {
     switch (teamAbbr.toLowerCase()) {
       case 'atl':
@@ -433,3 +433,4 @@ module.exports = {
     }
   },
 };
+export default naming;

@@ -1,8 +1,9 @@
-require('dotenv').config();
-const config = require('./config');
-const mlb = require('./leagues/mlb');
-const nba = require('./leagues/nba');
-const nfl = require('./leagues/nfl');
+
+import 'dotenv/config';
+import config from './config.js';
+import mlb from './leagues/mlb.js';
+import nba from './leagues/nba.js';
+import nfl from './leagues/nfl.js';
 
 const LEAGUES = { mlb, nba, nfl };
 

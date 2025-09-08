@@ -146,5 +146,5 @@ config.nfl = {
 // END USER CONFIGURATION //
 
 //      DO NOT TOUCH      //
-module.exports = config;
+export default config;
 ////////////////////////////

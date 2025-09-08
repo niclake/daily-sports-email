@@ -3,6 +3,7 @@
   "author": "Nic Lake",
   "version": "2.0.0",
   "description": "A project to email you schedules of various sports leagues every day",
+  "type": "module",
   "dependencies": {
     "dotenv": "^17.2.2",
     "node-fetch": "2",

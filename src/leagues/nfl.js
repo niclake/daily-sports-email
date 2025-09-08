@@ -1,9 +1,9 @@
-require('dotenv').config();
-const tools = require('../utils/tools');
-const styling = require('../utils/styling');
-const naming = require('../utils/naming');
-const mailer = require('../utils/mailer');
-const fetch = require('node-fetch');
+import 'dotenv/config';
+import tools from '../utils/tools.js';
+import styling from '../utils/styling.js';
+import naming from '../utils/naming.js';
+import mailer from '../utils/mailer.js';
+import fetch from 'node-fetch';
 
 async function fetchNFLData() {
   const sportsDataKey = process.env.SPORTS_DATA_KEY;
@@ -262,7 +262,7 @@ async function sendEmail() {
   }
 }
 
-module.exports = {
+export default {
   sendEmail,
 };
 

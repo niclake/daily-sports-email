@@ -1,8 +1,8 @@
-require('dotenv').config();
-const tools = require('../utils/tools');
-const styling = require('../utils/styling');
-const mailer = require('../utils/mailer');
-const fetch = require('node-fetch');
+import 'dotenv/config';
+import tools from '../utils/tools.js';
+import styling from '../utils/styling.js';
+import mailer from '../utils/mailer.js';
+import fetch from 'node-fetch';
 
 async function fetchMLBData() {
   const date = tools.theDate();
@@ -166,7 +166,7 @@ async function sendEmail() {
   }
 }
 
-module.exports = {
+export default {
   sendEmail,
 };
 

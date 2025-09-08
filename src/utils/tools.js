@@ -1,4 +1,4 @@
-const config = require('../config');
+import config from '../config.js';
 
 function nthNumber(number) {
   if (number > 3 && number < 21) return `${number}th`;
@@ -64,7 +64,7 @@ function playoffChase(sport) {
   return config[sport].playoff_chase;
 }
 
-module.exports = {
+export default {
   theDate: formatDate,
   theTime,
   teamClass,

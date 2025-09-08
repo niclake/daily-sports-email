@@ -1,6 +1,6 @@
-module.exports = {
+const styling = {
   emailStyles: function (league = nil) {
-    style = `
+    var style = `
       <style>
         table, th, td {border: 1px solid #ccc; border-collapse: collapse; font-size: .8rem;}
         table {min-width: 50%;}
@@ -133,3 +133,4 @@ module.exports = {
     `;
   },
 };
+export default styling;
