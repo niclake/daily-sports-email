@@ -18,6 +18,7 @@ I am the type of person that needs information put right in front of me if I wan
   - `config.send_email.*`: the various league emails
   - `config.email_client.*`: SMTP settings for your email client (Gmail is already set)
   - `config.user.*`: Localized game start times + 12/24hr display
+  - `config.${league}.playoff_chase`: Highlight any team that is part of the playoff chase late in the season
   - `config.${league}.*`: Choose your favorite teams to highlight them in the email
 
 > [!NOTE]
@@ -56,13 +57,9 @@ MAIL_USER_PASSWORD="yourAppSpecificPasswordHere"
 
 You do not need any additional information.
 
-### For NBA
+### For NBA & NFL
 
-You will need a [SportsData.IO](https://sportsdata.io) account, and an NBA API Free Trial. Add a `SPORTS_DATA_KEY_NBA` value to your `.env` file for local testing, and/or to your Github Secrets for running the automation.
-
-### For NFL
-
-You will need a [SportsData.IO](https://sportsdata.io) account, and an NFL API Free Trial. Add a `SPORTS_DATA_KEY_NFL` value to your `.env` file for local testing, and/or to your Github Secrets for running the automation.
+You will need a [SportsData.IO](https://sportsdata.io) account, and an API Free Trial. Add a `SPORTS_DATA_KEY` value to your `.env` file for local testing, and/or to your Github Secrets for running the automation.
 
 ## To Do
 
@@ -71,16 +68,16 @@ You will need a [SportsData.IO](https://sportsdata.io) account, and an NFL API F
 - [X] MLB Standings API & format
 - [X] MLB Email
 - [X] Highlight MLB teams if they're a favorite
-- [ ] NFL Schedule API & format
-- [ ] NFL Standings API & format
-- [ ] NFL Email
-  - [ ] Send one on Tues/Weds for the upcoming week
-  - [ ] Send one each day for games that day
-- [ ] Highlight NFL teams if they're a favorite
-- [ ] NBA schedule API & format
-- [ ] NBA standings API & format
-- [ ] NBA Email
-- [ ] Highlight NBA teams if they're a favorite
+- [X] NFL Schedule API & format
+- [X] NFL Standings API & format
+- [X] NFL Email
+  - [X] Send one on Weds for the upcoming week
+  - [X] Send one each day for games that day
+- [X] Highlight NFL teams if they're a favorite
+- [X] NBA schedule API & format
+- [X] NBA standings API & format
+- [X] NBA Email
+- [X] Highlight NBA teams if they're a favorite
 - [ ] Command to generate .env and src/config.js files locally
 - [ ] Favorite team email(s) each Monday?
 - [ ] Option to only show favorite teams

@@ -1,16 +1,14 @@
 {
   "name": "daily-sports-schedule-email",
-  "version": "1.0.0",
+  "author": "Nic Lake",
+  "version": "2.0.0",
   "description": "A project to email you schedules of various sports leagues every day",
-  "main": "index.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
-  "author": "",
-  "license": "ISC",
   "dependencies": {
     "dotenv": "^16.4.5",
     "node-fetch": "2",
     "nodemailer": "^6.9.14"
+  },
+  "scripts": {
+    "start": "node src/main.js"
   }
 }

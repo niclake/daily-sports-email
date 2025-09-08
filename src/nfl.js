@@ -7,10 +7,8 @@ const fetch = require('node-fetch');
 
 async function fetchNFLData() {
   const sportsDataKey = process.env.SPORTS_DATA_KEY;
-  console.log("Api Key is", sportsDataKey);
   const timeframeRequest = await fetch(`https://api.sportsdata.io/v3/nfl/scores/json/Timeframes/current?key=${sportsDataKey}`);
   const timeframeData = await timeframeRequest.json();
-  console.log("Timeframe data:", timeframeData[0]);
   const apiSeason = timeframeData[0].ApiSeason;
   const apiWeek = timeframeData[0].ApiWeek;
   // break here if there's no week data
@@ -157,27 +155,43 @@ function renderStandings(standings, apiWeek, teamClasses) {
   return html;
 }
 
-async function sendNFLEmail() {
-  console.log('Running NFL Schedule');
+async function sendEmail() {
+  try {
+    console.log('Running NFL Schedule');
 
-  let dayOfWeek = tools.theDate(false, false, "nflDay");
-  if (dayOfWeek == 2) { console.log("Not sending NFL email on Tuesdays"); return; };
+    let dayOfWeek = tools.theDate(false, false, "nflDay");
+    if (dayOfWeek == 2) { 
+      console.log("Not sending NFL email on Tuesdays"); 
+      return; 
+    }
 
-  const { weeklyScheduleData, dailyScheduleData, standingsData, apiSeason, apiWeek } = await fetchNFLData();
-  const games = (dayOfWeek == 3) ? weeklyScheduleData ?? [] : dailyScheduleData ?? [];
-  // Don't send the NFL email if there are no games scheduled
-  if (!games.length) return;
+    const { weeklyScheduleData, dailyScheduleData, standingsData, apiSeason, apiWeek } = await fetchNFLData();
+    const games = (dayOfWeek == 3) ? weeklyScheduleData ?? [] : dailyScheduleData ?? [];
+    // Don't send the NFL email if there are no games scheduled
+    if (!games.length) { 
+      console.log("Not sending NFL email - no games"); 
+      return; 
+    }
 
-  const subject = (dayOfWeek == 3) ? `NFL Schedule & Standings for Week ${apiWeek}` : `NFL Schedule & Standings for ${tools.theDate(true)}`;
-  const teamClasses = buildTeamClasses(standingsData);
-  const formattedStandings = formatStandings(standingsData);
-  const scheduleHtml = renderSchedule(games, formattedStandings, apiSeason, apiWeek, dayOfWeek, teamClasses);
-  const standingsHtml = renderStandings(formattedStandings, apiWeek, teamClasses);
-  const bodyText = scheduleHtml + `<br/><hr/>` + standingsHtml;
+    const subject = (dayOfWeek == 3) ? `NFL Schedule & Standings for Week ${apiWeek}` : `NFL Schedule & Standings for ${tools.theDate(true)}`;
+    const teamClasses = buildTeamClasses(standingsData);
+    const formattedStandings = formatStandings(standingsData);
+    const scheduleHtml = renderSchedule(games, formattedStandings, apiSeason, apiWeek, dayOfWeek, teamClasses);
+    const standingsHtml = renderStandings(formattedStandings, apiWeek, teamClasses);
+    const bodyText = scheduleHtml + `<br/><hr/>` + standingsHtml;
 
-  await mailer.sendEmail(subject, bodyText);
+    await mailer.sendEmail(subject, bodyText);
 
-  console.log("NFL email sent");
+    console.log("NFL email sent");
+  } catch (error) {
+    console.error("Error sending NFL email:", error);
+  }
 }
 
-sendNFLEmail();
+module.exports = {
+  sendEmail
+};
+
+// For testing purposes only
+//
+// sendEmail();

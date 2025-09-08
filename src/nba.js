@@ -1,7 +1,7 @@
 require('dotenv').config();
-var tools = require('./tools');
-var styling = require('./styling');
-var naming = require('./naming');
+const tools = require('./tools');
+const styling = require('./styling');
+const naming = require('./naming');
 const mailer = require('./mailer');
 const fetch = require('node-fetch');
 
@@ -150,22 +150,32 @@ function renderStandings(standings, teamClasses) {
   return html;
 }
 
-async function sendNBAEmail() {
-  console.log('Running NBA Schedule');
-  const { scheduleData, standingsData } = await fetchNBAData();
-  const games = scheduleData ?? [];
-  if (!games.length) return;
+async function sendEmail() {
+  try {
+    console.log('Running NBA Schedule');
+    const { scheduleData, standingsData } = await fetchNBAData();
+    const games = scheduleData ?? [];
+    if (!games.length) { console.log("Not sending NBA email - no games"); return; }
 
-  const subject = `NBA Schedule & Standings for ${tools.theDate(true)}`;
-  const teamClasses = buildTeamClasses(standingsData);
-  const formattedStandings = formatStandings(standingsData);
-  const scheduleHtml = renderSchedule(games, formattedStandings, teamClasses);
-  const standingsHtml = renderStandings(formattedStandings, teamClasses);
-  const bodyText = scheduleHtml + `<br/><hr/>` + standingsHtml;
+    const subject = `NBA Schedule & Standings for ${tools.theDate(true)}`;
+    const teamClasses = buildTeamClasses(standingsData);
+    const formattedStandings = formatStandings(standingsData);
+    const scheduleHtml = renderSchedule(games, formattedStandings, teamClasses);
+    const standingsHtml = renderStandings(formattedStandings, teamClasses);
+    const bodyText = scheduleHtml + `<br/><hr/>` + standingsHtml;
 
-  await mailer.sendEmail(subject, bodyText);
+    await mailer.sendEmail(subject, bodyText);
 
-  console.log("NBA email sent");
+    console.log("NBA email sent");
+  } catch (error) {
+    console.error("Error sending NBA email:", error);
+  }
 }
 
-sendNBAEmail();
+module.exports = {
+  sendEmail
+};
+
+// For testing purposes only
+//
+// sendEmail();

@@ -124,21 +124,31 @@ function renderStandings(standings, teamClasses) {
   return html;
 }
 
-async function sendMLBEmail() {
-  console.log('Running MLB Schedule');
-  const { scheduleData, standingsData } = await fetchMLBData();
-  const games = scheduleData.dates[0]?.games ?? [];
-  if (!games.length) return;
+async function sendEmail() {
+  try {
+    console.log('Running MLB Schedule');
+    const { scheduleData, standingsData } = await fetchMLBData();
+    const games = scheduleData.dates[0]?.games ?? [];
+    if (!games.length) { console.log("Not sending MLB email - no games"); return; }
 
-  const subject = `MLB Schedule & Standings for ${tools.theDate(true)}`;
-  const teamClasses = buildTeamClasses(standingsData.records);
-  const scheduleHtml = renderSchedule(games, teamClasses);
-  const standingsHtml = renderStandings(standingsData.records, teamClasses);
-  const bodyText = scheduleHtml + `<br/><hr/>` + standingsHtml;
+    const subject = `MLB Schedule & Standings for ${tools.theDate(true)}`;
+    const teamClasses = buildTeamClasses(standingsData.records);
+    const scheduleHtml = renderSchedule(games, teamClasses);
+    const standingsHtml = renderStandings(standingsData.records, teamClasses);
+    const bodyText = scheduleHtml + `<br/><hr/>` + standingsHtml;
 
-  await mailer.sendEmail(subject, bodyText);
+    await mailer.sendEmail(subject, bodyText);
 
-  console.log("MLB email sent");
+    console.log("MLB email sent");
+  } catch (error) {
+    console.error("Error sending MLB email:", error);
+  }
 }
 
-sendMLBEmail();
+module.exports = {
+  sendEmail
+};
+
+// For testing purposes only
+//
+// sendEmail();
