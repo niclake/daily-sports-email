@@ -93,7 +93,7 @@ function renderSchedule(games, standings, teamClasses) {
     const gameTime = tools.theTime(utcDateTime);
     const IST = game.InseasonTournament ? ` (NBA Cup)` : '';
 
-    gameContent = `
+    html += `
       <tr>
         <td rowspan="2">${gameTime}${IST}</td>
         <td><span class="pill ${aTeamClass}"><strong>${awayInfo['full']}</strong></span></td>
@@ -104,10 +104,7 @@ function renderSchedule(games, standings, teamClasses) {
         <td>${hTeamStandings['wins']}-${hTeamStandings['losses']}</td>
       </tr>
       <tr><th colspan="4">&nbsp;</th></tr>`;
-
-    html += gameContent;
   }
-
   html += `</table>`;
   return html;
 }
@@ -198,5 +195,4 @@ export default {
 };
 
 // For testing purposes only
-//
 // sendEmail();
