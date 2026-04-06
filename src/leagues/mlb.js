@@ -11,7 +11,7 @@ async function fetchMLBData() {
       `http://statsapi.mlb.com/api/v1/schedule/games/?sportId=1&hydrate=probablePitcher&date=${date}`
     ),
     fetch(
-      `https://statsapi.mlb.com/api/v1/standings?leagueId=103,104&hydrate=division`
+      `https://statsapi.mlb.com/api/v1/standings?leagueId=103,104&hydrate=team(division)`
     ),
   ]);
   const scheduleData = await scheduleRes.json();
@@ -130,7 +130,7 @@ function renderStandings(standings, teamClasses) {
           <td style="text-align: center">${team.leagueRecord.losses}</td>
           <td style="text-align: center">${team.leagueRecord.pct}</td>
           <td style="text-align: center">${lTenObj.wins}-${lTenObj.losses} (${
-            team.streak.streakCode || ''
+            team?.streak?.streakCode || '--'
           })</td>
           <td style="text-align: center">${team.gamesBack}</td>
           <td style="text-align: center">${team.wildCardGamesBack}</td>
