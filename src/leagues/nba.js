@@ -52,7 +52,7 @@ function formatStandings(standingsData) {
       losses: team.Losses,
       pct: team.Percentage.toFixed(3),
       streak: team.StreakDescription,
-      gamesBack: team.GamesBack === 0 ? '-' : team.GamesBack,
+      gamesBack: team.GamesBack,
       conference: team.Conference,
       division: team.Division,
       confRank: team.ConferenceRank,
@@ -110,8 +110,7 @@ function renderSchedule(games, standings, teamClasses) {
 }
 
 function renderStandings(standings, teamClasses) {
-  var conference,
-    division = '';
+  var conference = '';
   let html = `
   <h1>Standings</h1>
     <table>
@@ -119,10 +118,10 @@ function renderStandings(standings, teamClasses) {
 
   const eastStandings = standings
     .filter((team) => team.conference === 'Eastern')
-    .sort((a, b) => a.confRank - b.confRank);
+    .sort((a, b) => a.gamesBack - b.gamesBack || b.pct - a.pct);
   const westStandings = standings
     .filter((team) => team.conference === 'Western')
-    .sort((a, b) => a.confRank - b.confRank);
+    .sort((a, b) => a.gamesBack - b.gamesBack || b.pct - a.pct);
   const theStandings = eastStandings.concat(westStandings);
 
   for (const team of theStandings) {
@@ -140,15 +139,16 @@ function renderStandings(standings, teamClasses) {
         <th style="padding: 0.5rem;">Streak</th>
         <th style="padding: 0.5rem;">GB</th>
       </tr>`;
+      var ranking = 1;
     }
 
-    const rank = team.confRank;
+    const rank = ranking;
     const teamName = `${team.teamCity} ${team.teamName}`;
     const teamClass = teamClasses[teamName];
     const winLoss = `${team.wins}-${team.losses}`;
     const pct = team.pct;
     const streak = team.streak;
-    const gamesBack = team.gamesBack;
+    const gamesBack = team.gamesBack === 0 ? "-" : team.gamesBack;
 
     html += `
       <tr>
@@ -159,6 +159,8 @@ function renderStandings(standings, teamClasses) {
         <td style="text-align: center">${streak}</td>
         <td style="text-align: center">${gamesBack}</td>
       </tr>`;
+
+    ranking++;
   }
 
   html += `</table>`;
