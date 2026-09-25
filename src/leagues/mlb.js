@@ -31,7 +31,10 @@ function buildTeamClasses(standings) {
       const labelTrue = tools.teamConfig('mlb', teamName) == 'true';
       const isSept = tools.theDate(false, true);
       const inWCChase =
-        (wildCardGamesBack <= 5 && !eliminated) || wildCardLeader;
+        (wildCardGamesBack <= 5 && !eliminated) ||
+        wildCardLeader ||
+        teamRecord.divisionLeader ||
+        teamRecord.clinched;
       const wcHighlight =
         isSept && inWCChase && tools.playoffChase('mlb') == 'true';
       const teamClass =
@@ -146,7 +149,9 @@ async function sendEmail() {
   try {
     console.log('Running MLB Schedule');
     const { scheduleData, standingsData } = await fetchMLBData();
-    const games = scheduleData.dates[0]?.games ?? [];
+    const games = (scheduleData.dates[0]?.games ?? []).sort(
+      (a, b) => new Date(a.gameDate) - new Date(b.gameDate)
+    );
     if (!games.length) {
       console.log('Not sending MLB email - no games');
       return;
